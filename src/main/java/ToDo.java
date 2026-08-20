@@ -8,8 +8,8 @@ public class ToDo extends Task {
     }
 
     @Override
-    protected String getTypeIcon() {
-        return "T";
+    protected TaskType getType() {
+        return TaskType.TODO;
     }
 
     @Override
