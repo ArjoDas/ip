@@ -37,8 +37,8 @@ public class Alfred {
     private static void greet() {
         printLine();
         System.out.println(BANNER);
-        printMessage("Hello! I'm Alfred.");
-        printMessage("What can I do for you?");
+        printMessage("Good day. I'm Alfred, at your service.");
+        printMessage("How may I assist you?");
         printLine();
     }
 
@@ -48,7 +48,7 @@ public class Alfred {
         while (true) {
             String command = scanner.nextLine();
             if (command.equals("bye")) {
-                showReply("Bye. Hope to see you again soon!");
+                showReply("Until next time. I shall be here should you require me.");
                 break;
             }
             if (command.equals("list")) {
@@ -57,15 +57,20 @@ public class Alfred {
                 updateTaskStatus(command, true);
             } else if (command.startsWith("unmark ")) {
                 updateTaskStatus(command, false);
+            } else if (command.equals("todo")) {
+                showError("a todo requires a description, sir.");
             } else if (command.startsWith("todo ")) {
-                addTask(new ToDo(command.substring(5)));
+                addTodo(command.substring("todo ".length()));
+            } else if (command.equals("deadline")) {
+                showError("a deadline requires a description, sir.");
             } else if (command.startsWith("deadline ")) {
                 addDeadline(command);
+            } else if (command.equals("event")) {
+                showError("an event requires a description and its times, sir.");
             } else if (command.startsWith("event ")) {
                 addEvent(command);
             } else {
-                // catchall for undeclared task types
-                addTask(new ToDo(command));
+                showError("I do not recognise that request, sir.");
             }
         }
     }
@@ -75,42 +80,72 @@ public class Alfred {
         if (taskCount < MAX_TASKS) {
             tasks[taskCount] = task;
             taskCount++;
-            showReply("Got it. I've added this task:\n" + INDENT + "  "
+                showReply("Very good. I've added this task:\n" + INDENT + "  "
                     + task.getDisplayText() + "\n"
-                    + INDENT + "Now you have " + taskCount + " tasks in the list.");
+                    + INDENT + "You now have " + taskCount + " tasks in your list.");
         } else {
-            showReply("Task limit reached.");
+            showReply("I'm afraid your task list is full, sir.");
         }
+    }
+
+    /** Validates and stores a todo description. */
+    private static void addTodo(String description) {
+        if (description.trim().isEmpty()) {
+            showError("a todo requires a description, sir.");
+            return;
+        }
+        addTask(new ToDo(description));
+    }
+
+    /** Displays an error without changing the task list. */
+    private static void showError(String message) {
+        showReply("I'm afraid I must report: " + message);
     }
 
     /** Parses and stores a deadline command. */
     private static void addDeadline(String command) {
-        int delimiter = command.indexOf(" /by ");
+        String body = command.substring("deadline ".length());
+        int delimiter = body.indexOf("/by");
         if (delimiter < 0) {
-            addTask(new ToDo(command.substring(9)));
+            showError("a deadline needs a description and a /by date or time, sir.");
             return;
         }
-        addTask(new Deadline(command.substring(9, delimiter),
-                command.substring(delimiter + 5)));
+        String description = body.substring(0, delimiter).trim();
+        String deadline = body.substring(delimiter + 3).trim();
+        if (description.trim().isEmpty() || deadline.trim().isEmpty()) {
+            if (description.trim().isEmpty()) {
+                showError("a deadline needs a description, sir.");
+            } else {
+                showError("a deadline needs a date or time after /by, sir.");
+            }
+            return;
+        }
+        addTask(new Deadline(description, deadline));
     }
 
     /** Parses and stores an event command. */
     private static void addEvent(String command) {
-        int fromDelimiter = command.indexOf(" /from ");
-        int toDelimiter = command.indexOf(" /to ");
+        String body = command.substring("event ".length());
+        int fromDelimiter = body.indexOf("/from");
+        int toDelimiter = body.indexOf("/to");
         if (fromDelimiter < 0 || toDelimiter < 0 || toDelimiter < fromDelimiter) {
-            addTask(new ToDo(command.substring(6)));
+            showError("an event needs a description, a /from time, and a /to time, sir.");
             return;
         }
-        addTask(new Event(command.substring(6, fromDelimiter),
-                command.substring(fromDelimiter + 7, toDelimiter),
-                command.substring(toDelimiter + 5)));
+        String description = body.substring(0, fromDelimiter).trim();
+        String from = body.substring(fromDelimiter + 5, toDelimiter).trim();
+        String to = body.substring(toDelimiter + 3).trim();
+        if (description.trim().isEmpty() || from.trim().isEmpty() || to.trim().isEmpty()) {
+            showError("an event needs a description and both date/time fields, sir.");
+            return;
+        }
+        addTask(new Event(description, from, to));
     }
 
     /** Displays all tasks in the order they were entered. */
     private static void showTaskList() {
         printLine();
-        printMessage("Here are the tasks in your list:");
+        printMessage("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
             printMessage((i + 1) + "." + tasks[i].getDisplayText());
         }
@@ -122,7 +157,7 @@ public class Alfred {
         try {
             int taskNumber = Integer.parseInt(command.substring(command.indexOf(' ') + 1));
             if (taskNumber < 1 || taskNumber > taskCount) {
-                showReply("That task number does not exist.");
+                showError("that task number does not exist, sir.");
                 return;
             }
             int taskIndex = taskNumber - 1;
@@ -132,11 +167,11 @@ public class Alfred {
                 tasks[taskIndex].markAsNotDone();
             }
             String response = isDone
-                    ? "Nice! I've marked this task as done:\n" + INDENT + "  "
-                    : "OK, I've marked this task as not done yet:\n" + INDENT + "  ";
+                    ? "Very good. I've marked this task as done:\n" + INDENT + "  "
+                    : "Certainly. I've marked this task as not done:\n" + INDENT + "  ";
                 showReply(response + tasks[taskIndex].getDisplayText());
         } catch (NumberFormatException exception) {
-            showReply("Please provide a valid task number.");
+            showError("please provide a valid task number, sir.");
         }
     }
 
