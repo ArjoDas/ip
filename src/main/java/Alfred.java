@@ -57,21 +57,54 @@ public class Alfred {
                 updateTaskStatus(command, true);
             } else if (command.startsWith("unmark ")) {
                 updateTaskStatus(command, false);
+            } else if (command.startsWith("todo ")) {
+                addTask(new ToDo(command.substring(5)));
+            } else if (command.startsWith("deadline ")) {
+                addDeadline(command);
+            } else if (command.startsWith("event ")) {
+                addEvent(command);
             } else {
-                addTask(command);
+                // catchall for undeclared task types
+                addTask(new ToDo(command));
             }
         }
     }
 
     /** Stores a task and confirms that it was added. */
-    private static void addTask(String task) {
+    private static void addTask(Task task) {
         if (taskCount < MAX_TASKS) {
-            tasks[taskCount] = new Task(task);
+            tasks[taskCount] = task;
             taskCount++;
-            showReply("added: " + task);
+            showReply("Got it. I've added this task:\n" + INDENT + "  "
+                    + task.getDisplayText() + "\n"
+                    + INDENT + "Now you have " + taskCount + " tasks in the list.");
         } else {
             showReply("Task limit reached.");
         }
+    }
+
+    /** Parses and stores a deadline command. */
+    private static void addDeadline(String command) {
+        int delimiter = command.indexOf(" /by ");
+        if (delimiter < 0) {
+            addTask(new ToDo(command.substring(9)));
+            return;
+        }
+        addTask(new Deadline(command.substring(9, delimiter),
+                command.substring(delimiter + 5)));
+    }
+
+    /** Parses and stores an event command. */
+    private static void addEvent(String command) {
+        int fromDelimiter = command.indexOf(" /from ");
+        int toDelimiter = command.indexOf(" /to ");
+        if (fromDelimiter < 0 || toDelimiter < 0 || toDelimiter < fromDelimiter) {
+            addTask(new ToDo(command.substring(6)));
+            return;
+        }
+        addTask(new Event(command.substring(6, fromDelimiter),
+                command.substring(fromDelimiter + 7, toDelimiter),
+                command.substring(toDelimiter + 5)));
     }
 
     /** Displays all tasks in the order they were entered. */

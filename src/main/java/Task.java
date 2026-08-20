@@ -1,7 +1,7 @@
 /**
  * Represents a task entered into Alfred.
  */
-public class Task {
+public abstract class Task {
     /** Text describing the task. */
     protected String description;
 
@@ -36,6 +36,13 @@ public class Task {
 
     /** Returns the task formatted with its completion status. */
     public String getDisplayText() {
-        return "[" + getStatusIcon() + "] " + description;
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] "
+                + description + getDateTimeText();
     }
+
+    /** Returns the icon identifying this task type. */
+    protected abstract String getTypeIcon();
+
+    /** Returns the date or time details to append to the task description. */
+    protected abstract String getDateTimeText();
 }
