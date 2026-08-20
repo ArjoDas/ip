@@ -23,7 +23,7 @@ public class Alfred {
                     + "    /_/   \\_\\_|_| |_|  \\___|\\__,_|";
 
     /** Tasks entered by the user during the current run. */
-    private static final String[] tasks = new String[MAX_TASKS];
+    private static final Task[] tasks = new Task[MAX_TASKS];
 
     /** Number of tasks currently stored. */
     private static int taskCount = 0;
@@ -53,6 +53,10 @@ public class Alfred {
             }
             if (command.equals("list")) {
                 showTaskList();
+            } else if (command.startsWith("mark ")) {
+                updateTaskStatus(command, true);
+            } else if (command.startsWith("unmark ")) {
+                updateTaskStatus(command, false);
             } else {
                 addTask(command);
             }
@@ -62,7 +66,7 @@ public class Alfred {
     /** Stores a task and confirms that it was added. */
     private static void addTask(String task) {
         if (taskCount < MAX_TASKS) {
-            tasks[taskCount] = task;
+            tasks[taskCount] = new Task(task);
             taskCount++;
             showReply("added: " + task);
         } else {
@@ -73,10 +77,34 @@ public class Alfred {
     /** Displays all tasks in the order they were entered. */
     private static void showTaskList() {
         printLine();
+        printMessage("Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
-            printMessage((i + 1) + ". " + tasks[i]);
+            printMessage((i + 1) + "." + tasks[i].getDisplayText());
         }
         printLine();
+    }
+
+    /** Marks or unmarks the task identified by a one-based index. */
+    private static void updateTaskStatus(String command, boolean isDone) {
+        try {
+            int taskNumber = Integer.parseInt(command.substring(command.indexOf(' ') + 1));
+            if (taskNumber < 1 || taskNumber > taskCount) {
+                showReply("That task number does not exist.");
+                return;
+            }
+            int taskIndex = taskNumber - 1;
+            if (isDone) {
+                tasks[taskIndex].markAsDone();
+            } else {
+                tasks[taskIndex].markAsNotDone();
+            }
+            String response = isDone
+                    ? "Nice! I've marked this task as done:\n" + INDENT + "  "
+                    : "OK, I've marked this task as not done yet:\n" + INDENT + "  ";
+                showReply(response + tasks[taskIndex].getDisplayText());
+        } catch (NumberFormatException exception) {
+            showReply("Please provide a valid task number.");
+        }
     }
 
     /** Frames a single chatbot reply between divider lines. */
