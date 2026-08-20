@@ -57,6 +57,8 @@ public class Alfred {
                 updateTaskStatus(command, true);
             } else if (command.startsWith("unmark ")) {
                 updateTaskStatus(command, false);
+            } else if (command.startsWith("delete ")) {
+                deleteTask(command);
             } else if (command.equals("todo")) {
                 showError("a todo requires a description, sir.");
             } else if (command.startsWith("todo ")) {
@@ -95,6 +97,29 @@ public class Alfred {
             return;
         }
         addTask(new ToDo(description));
+    }
+
+    /** Deletes the task identified by a one-based index. */
+    private static void deleteTask(String command) {
+        try {
+            int taskNumber = Integer.parseInt(command.substring("delete ".length()));
+            if (taskNumber < 1 || taskNumber > taskCount) {
+                showError("that task number does not exist, sir.");
+                return;
+            }
+            int taskIndex = taskNumber - 1;
+            Task deletedTask = tasks[taskIndex];
+            for (int i = taskIndex; i < taskCount - 1; i++) {
+                tasks[i] = tasks[i + 1];
+            }
+            tasks[taskCount - 1] = null;
+            taskCount--;
+            showReply("Noted. I've removed this task:\n" + INDENT + "  "
+                    + deletedTask.getDisplayText() + "\n"
+                    + INDENT + "Now you have " + taskCount + " tasks in the list.");
+        } catch (NumberFormatException exception) {
+            showError("please provide a valid task number, sir.");
+        }
     }
 
     /** Displays an error without changing the task list. */
