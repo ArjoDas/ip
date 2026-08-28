@@ -39,3 +39,23 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Creating an executable JAR
+
+Prerequisites: JDK 25.
+
+Alfred is packaged as a fat JAR with the Gradle Shadow plugin. The output includes the application classes and a `Main-Class` manifest entry so it can be launched with `java -jar`.
+
+1. Open a terminal in the project root (the folder that contains `build.gradle`).
+1. Create the JAR:
+   * macOS / Linux: `./gradlew clean shadowJar`
+   * Windows: `gradlew clean shadowJar`
+1. Locate the file at `build/libs/alfred.jar`.
+
+To run a distributed copy:
+
+1. Copy `alfred.jar` into an empty folder.
+1. Open a command window in that folder.
+1. Run `java -jar alfred.jar`.
+
+Tasks are saved in `data/alfred.txt` next to the JAR (the folder you ran the command from), not inside the project directory.
