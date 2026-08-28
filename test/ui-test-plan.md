@@ -49,12 +49,12 @@ Until next time. I shall be here should you require me.
 
 ### 2. Add and List Deadline
 
-**Aim:** Verify that a deadline stores the text after `/by` and displays it with the `[D]` type icon.
+**Aim:** Verify that a deadline stores a parsed `/by` date and displays it as `MMM dd yyyy`.
 
 **Inputs:**
 
 ```text
-deadline submit report /by 11/10/2019 5pm
+deadline submit report /by 2019-10-15
 list
 bye
 ```
@@ -62,22 +62,22 @@ bye
 **Expected output:**
 
 ```text
-Got it. I've added this task:
-  [D][ ] submit report (by: 11/10/2019 5pm)
-Now you have 1 tasks in the list.
-Here are the tasks in your list:
-1.[D][ ] submit report (by: 11/10/2019 5pm)
-Bye. Hope to see you again soon!
+Very good. I've added this task:
+  [D][ ] submit report (by: Oct 15 2019)
+You now have 1 tasks in your list.
+Certainly. Here are the tasks in your list:
+1.[D][ ] submit report (by: Oct 15 2019)
+Until next time. I shall be here should you require me.
 ```
 
 ### 3. Add and List Event
 
-**Aim:** Verify that an event stores the text between `/from` and `/to`, and displays it with the `[E]` type icon.
+**Aim:** Verify that an event stores parsed `/from` and `/to` dates and displays them as `MMM dd yyyy`.
 
 **Inputs:**
 
 ```text
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2019-10-15 /to 2019-10-16
 list
 bye
 ```
@@ -85,12 +85,12 @@ bye
 **Expected output:**
 
 ```text
-Got it. I've added this task:
-  [E][ ] project meeting (from: Mon 2pm to: 4pm)
-Now you have 1 tasks in the list.
-Here are the tasks in your list:
-1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
-Bye. Hope to see you again soon!
+Very good. I've added this task:
+  [E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)
+You now have 1 tasks in your list.
+Certainly. Here are the tasks in your list:
+1.[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)
+Until next time. I shall be here should you require me.
 ```
 
 ### 4. Mark and Unmark Typed Tasks
@@ -101,8 +101,8 @@ Bye. Hope to see you again soon!
 
 ```text
 todo read book
-deadline return book /by Sunday
-event team meeting /from Mon 2pm /to 4pm
+deadline return book /by 2019-10-15
+event team meeting /from 2019-10-15 /to 2019-10-15
 mark 2
 list
 unmark 2
@@ -114,18 +114,18 @@ bye
 
 ```text
 Very good. I've marked this task as done:
-  [D][X] return book (by: Sunday)
+  [D][X] return book (by: Oct 15 2019)
 Certainly. Here are the tasks in your list:
 1.[T][ ] read book
-2.[D][X] return book (by: Sunday)
-3.[E][ ] team meeting (from: Mon 2pm to: 4pm)
+2.[D][X] return book (by: Oct 15 2019)
+3.[E][ ] team meeting (from: Oct 15 2019 to: Oct 15 2019)
 Certainly. I've marked this task as not done:
-  [D][ ] return book (by: Sunday)
+  [D][ ] return book (by: Oct 15 2019)
 Here are the tasks in your list:
 1.[T][ ] read book
-2.[D][ ] return book (by: Sunday)
-3.[E][ ] team meeting (from: Mon 2pm to: 4pm)
-Bye. Hope to see you again soon!
+2.[D][ ] return book (by: Oct 15 2019)
+3.[E][ ] team meeting (from: Oct 15 2019 to: Oct 15 2019)
+Until next time. I shall be here should you require me.
 ```
 
 ## Error and State-Preservation Cases
@@ -165,7 +165,7 @@ Bye. Hope to see you again!
 
 ```text
 todo
-deadline submit report /by Sunday
+deadline submit report /by 2019-10-15
 list
 bye
 ```
@@ -173,13 +173,13 @@ bye
 **Expected output:**
 
 ```text
-OOPS!!! The description of a todo cannot be empty.
-Got it. I've added this task:
-  [D][ ] submit report (by: Sunday)
-Now you have 1 tasks in the list.
-Here are the tasks in your list:
-1.[D][ ] submit report (by: Sunday)
-Bye. Hope to see you again soon!
+I'm afraid I must report: a todo requires a description, sir.
+Very good. I've added this task:
+  [D][ ] submit report (by: Oct 15 2019)
+You now have 1 tasks in your list.
+Certainly. Here are the tasks in your list:
+1.[D][ ] submit report (by: Oct 15 2019)
+Until next time. I shall be here should you require me.
 ```
 
 ### 7. Unknown Command
@@ -215,7 +215,7 @@ Bye. Hope to see you again soon!
 
 ```text
 blah
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2019-10-15 /to 2019-10-15
 list
 bye
 ```
@@ -223,13 +223,13 @@ bye
 **Expected output:**
 
 ```text
-OOPS!!! I'm sorry, but I don't know what that means :-(
-Got it. I've added this task:
-  [E][ ] project meeting (from: Mon 2pm to: 4pm)
-Now you have 1 tasks in the list.
-Here are the tasks in your list:
-1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
-Bye. Hope to see you again soon!
+I'm afraid I must report: I do not recognise that request, sir.
+Very good. I've added this task:
+  [E][ ] project meeting (from: Oct 15 2019 to: Oct 15 2019)
+You now have 1 tasks in your list.
+Certainly. Here are the tasks in your list:
+1.[E][ ] project meeting (from: Oct 15 2019 to: Oct 15 2019)
+Until next time. I shall be here should you require me.
 ```
 
 ### 9. Malformed Deadline
@@ -328,5 +328,49 @@ bye
 I'm afraid I must report: a deadline needs a description, sir.
 I'm afraid I must report: an event needs a description and both date/time fields, sir.
 Certainly. Here are the tasks in your list:
+Until next time. I shall be here should you require me.
+```
+
+### 13. Unrecognized Date
+
+**Aim:** Reject a free-text deadline date and leave the task list empty.
+
+**Inputs:**
+
+```text
+deadline return book /by Sunday
+list
+bye
+```
+
+**Expected output:**
+
+```text
+I'm afraid I must report: I need a date as yyyy-MM-dd or d/M/yyyy, optionally followed by HHmm, sir.
+Certainly. Here are the tasks in your list:
+Until next time. I shall be here should you require me.
+```
+
+### 14. List Tasks On a Date
+
+**Aim:** List only deadlines and events that occur on the given date, keeping original indices.
+
+**Inputs:**
+
+```text
+todo read book
+deadline return book /by 2019-10-15
+deadline later /by 2019-10-16
+event camp /from 2019-10-14 /to 2019-10-16
+on 2019-10-15
+bye
+```
+
+**Expected output:**
+
+```text
+Certainly. Here are the deadlines and events on Oct 15 2019:
+2.[D][ ] return book (by: Oct 15 2019)
+4.[E][ ] camp (from: Oct 14 2019 to: Oct 16 2019)
 Until next time. I shall be here should you require me.
 ```
