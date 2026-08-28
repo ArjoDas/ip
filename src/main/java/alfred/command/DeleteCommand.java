@@ -1,3 +1,10 @@
+package alfred.command;
+
+import alfred.AlfredException;
+import alfred.task.Task;
+import alfred.task.TaskList;
+import alfred.ui.Ui;
+
 /**
  * Removes a task identified by a zero-based index.
  */

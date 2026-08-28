@@ -1,3 +1,5 @@
+package alfred.task;
+
 /**
  * Identifies the supported kinds of tasks.
  */

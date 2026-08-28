@@ -1,3 +1,8 @@
+package alfred.command;
+
+import alfred.task.TaskList;
+import alfred.ui.Ui;
+
 /**
  * Ends the chatbot session.
  */

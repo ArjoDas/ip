@@ -1,3 +1,9 @@
+package alfred.command;
+
+import alfred.task.Task;
+import alfred.task.TaskList;
+import alfred.ui.Ui;
+
 /**
  * Adds a task to the list and confirms the addition.
  */
@@ -8,7 +14,7 @@ public class AddCommand extends Command {
     /**
      * Creates a command that will add {@code task}.
      *
-     * @param task Task produced by {@link Parser}.
+     * @param task Task produced by {@link alfred.parser.Parser}.
      */
     public AddCommand(Task task) {
         this.task = task;

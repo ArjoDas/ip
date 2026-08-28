@@ -1,3 +1,5 @@
+package alfred;
+
 /**
  * Signals a recoverable problem while handling a user command or the task list.
  */
