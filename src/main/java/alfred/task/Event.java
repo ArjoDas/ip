@@ -35,6 +35,12 @@ public class Event extends Task {
                 + " | " + from.toSaveString() + " | " + to.toSaveString();
     }
 
+    /**
+     * Returns {@code true} if {@code date} falls on or between this event's start and end dates.
+     *
+     * @param date Calendar date to test.
+     * @return {@code true} if {@code date} is in the inclusive start-to-end range.
+     */
     @Override
     public boolean occursOn(LocalDate date) {
         LocalDate start = from.toLocalDate();

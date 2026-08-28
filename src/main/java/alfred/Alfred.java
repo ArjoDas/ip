@@ -71,6 +71,7 @@ public class Alfred {
         }
     }
 
+    /** Launches Alfred using the default save file at {@code data/alfred.txt}. */
     public static void main(String[] args) {
         new Alfred("data/alfred.txt").run();
     }

@@ -31,6 +31,12 @@ public class Deadline extends Task {
                 + " | " + deadline.toSaveString();
     }
 
+    /**
+     * Returns {@code true} if this deadline's due date is {@code date}.
+     *
+     * @param date Calendar date to test.
+     * @return {@code true} if the due date equals {@code date}.
+     */
     @Override
     public boolean occursOn(LocalDate date) {
         return deadline.toLocalDate().equals(date);
