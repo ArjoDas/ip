@@ -16,4 +16,9 @@ public class ToDo extends Task {
     protected String getDateTimeText() {
         return "";
     }
+
+    @Override
+    public String toSaveFormat() {
+        return getType().getIcon() + " | " + getStatusBit() + " | " + description;
+    }
 }

@@ -9,12 +9,7 @@
   ```bash
   rm -rf .alfred-classes
   mkdir .alfred-classes
-  javac -d .alfred-classes \
-    src/main/java/Task.java \
-    src/main/java/ToDo.java \
-    src/main/java/Deadline.java \
-    src/main/java/Event.java \
-    src/main/java/Alfred.java
+  javac -d .alfred-classes src/main/java/*.java
   ```
 
 - Run command:
@@ -24,6 +19,7 @@
   ```
 
 - Comparison rule: compare captured output with the expected output. Ignore only the banner and divider formatting if the test runner explicitly documents that normalization. Task messages, ordering, status icons, and date/time strings must match exactly.
+- Isolation: delete `data/alfred.txt` (or the whole `data/` folder) before each case so leftover saved tasks do not affect later cases.
 - Failure policy: stop immediately after the first failed test case and report the complete actual and expected outputs.
 
 ## Test Cases

@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 /**
@@ -25,11 +27,18 @@ public class Alfred {
     /** Tasks entered by the user during the current run. */
     private static final Task[] tasks = new Task[MAX_TASKS];
 
+    /** Persists tasks to {@code data/alfred.txt} relative to the working directory. */
+    private static final Storage storage = new Storage(Path.of("data", "alfred.txt"));
+
     /** Number of tasks currently stored. */
     private static int taskCount = 0;
 
     public static void main(String[] args) {
+        boolean wasLoadError = restoreTasks();
         greet();
+        if (wasLoadError) {
+            showError("I could not read your saved tasks, sir.");
+        }
         echoUntilBye();
     }
 
@@ -82,9 +91,10 @@ public class Alfred {
         if (taskCount < MAX_TASKS) {
             tasks[taskCount] = task;
             taskCount++;
-                showReply("Very good. I've added this task:\n" + INDENT + "  "
+            showReply("Very good. I've added this task:\n" + INDENT + "  "
                     + task.getDisplayText() + "\n"
                     + INDENT + "You now have " + taskCount + " tasks in your list.");
+            persistTasks();
         } else {
             showReply("I'm afraid your task list is full, sir.");
         }
@@ -117,6 +127,7 @@ public class Alfred {
             showReply("Noted. I've removed this task:\n" + INDENT + "  "
                     + deletedTask.getDisplayText() + "\n"
                     + INDENT + "Now you have " + taskCount + " tasks in the list.");
+            persistTasks();
         } catch (NumberFormatException exception) {
             showError("please provide a valid task number, sir.");
         }
@@ -194,9 +205,34 @@ public class Alfred {
             String response = isDone
                     ? "Very good. I've marked this task as done:\n" + INDENT + "  "
                     : "Certainly. I've marked this task as not done:\n" + INDENT + "  ";
-                showReply(response + tasks[taskIndex].getDisplayText());
+            showReply(response + tasks[taskIndex].getDisplayText());
+            persistTasks();
         } catch (NumberFormatException exception) {
             showError("please provide a valid task number, sir.");
+        }
+    }
+
+    /**
+     * Loads saved tasks into memory.
+     *
+     * @return {@code true} if the save file existed but could not be read.
+     */
+    private static boolean restoreTasks() {
+        try {
+            taskCount = storage.load(tasks);
+            return false;
+        } catch (IOException exception) {
+            taskCount = 0;
+            return true;
+        }
+    }
+
+    /** Writes the current task list to disk, reporting I/O failures to the user. */
+    private static void persistTasks() {
+        try {
+            storage.save(tasks, taskCount);
+        } catch (IOException exception) {
+            showError("I could not save your tasks, sir.");
         }
     }
 

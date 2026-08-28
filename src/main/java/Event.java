@@ -24,4 +24,10 @@ public class Event extends Task {
     protected String getDateTimeText() {
         return " (from: " + from + " to: " + to + ")";
     }
+
+    @Override
+    public String toSaveFormat() {
+        return getType().getIcon() + " | " + getStatusBit() + " | " + description
+                + " | " + from + " | " + to;
+    }
 }
