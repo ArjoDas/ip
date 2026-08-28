@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import alfred.AlfredException;
 import alfred.command.Command;
 import alfred.command.ExitCommand;
+import alfred.command.FindCommand;
 import alfred.command.ListCommand;
 import alfred.command.OnCommand;
 import alfred.task.TaskList;
@@ -153,6 +155,46 @@ public class ParserTest {
         AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("on Sunday"));
         assertEquals("I need a date as yyyy-MM-dd or d/M/yyyy, optionally followed by HHmm, sir.",
                 exception.getMessage());
+    }
+
+    @Test
+    public void parse_findWithoutKeyword_throwsException() {
+        AlfredException missing = assertThrows(AlfredException.class, () -> Parser.parse("find"));
+        assertEquals("a find command needs a keyword, sir.", missing.getMessage());
+        AlfredException blank = assertThrows(AlfredException.class, () -> Parser.parse("find   "));
+        assertEquals("a find command needs a keyword, sir.", blank.getMessage());
+    }
+
+    @Test
+    public void parse_findValid_returnsFindCommand() throws AlfredException {
+        Command command = Parser.parse("find book");
+        assertInstanceOf(FindCommand.class, command);
+        assertFalse(command.isMutating());
+    }
+
+    @Test
+    public void parse_findBook_printsMatchingTasks() throws AlfredException {
+        TaskList tasks = new TaskList();
+        run(Parser.parse("todo read book"), tasks);
+        run(Parser.parse("todo project meeting"), tasks);
+        run(Parser.parse("deadline return book /by 2019-06-06"), tasks);
+        run(Parser.parse("mark 1"), tasks);
+        run(Parser.parse("mark 3"), tasks);
+
+        PrintStream original = System.out;
+        ByteArrayOutputStream captured = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(captured));
+        try {
+            Parser.parse("find book").execute(tasks, new Ui());
+        } finally {
+            System.setOut(original);
+        }
+
+        String output = captured.toString();
+        assertTrue(output.contains("Here are the matching tasks in your list:"));
+        assertTrue(output.contains("1.[T][X] read book"));
+        assertTrue(output.contains("2.[D][X] return book (by: Jun 06 2019)"));
+        assertFalse(output.contains("project meeting"));
     }
 
     @Test

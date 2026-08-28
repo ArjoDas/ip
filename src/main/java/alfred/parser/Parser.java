@@ -5,6 +5,7 @@ import alfred.command.AddCommand;
 import alfred.command.Command;
 import alfred.command.DeleteCommand;
 import alfred.command.ExitCommand;
+import alfred.command.FindCommand;
 import alfred.command.ListCommand;
 import alfred.command.MarkCommand;
 import alfred.command.OnCommand;
@@ -38,6 +39,12 @@ public class Parser {
         }
         if (fullCommand.equals("list")) {
             return new ListCommand();
+        }
+        if (fullCommand.equals("find")) {
+            throw new AlfredException("a find command needs a keyword, sir.");
+        }
+        if (fullCommand.startsWith("find ")) {
+            return parseFind(fullCommand.substring("find ".length()));
         }
         if (fullCommand.equals("on")) {
             throw new AlfredException("an on command needs a date, sir.");
@@ -73,6 +80,14 @@ public class Parser {
             return parseEvent(fullCommand);
         }
         throw new AlfredException("I do not recognise that request, sir.");
+    }
+
+    private static Command parseFind(String keyword) throws AlfredException {
+        String trimmed = keyword.trim();
+        if (trimmed.isEmpty()) {
+            throw new AlfredException("a find command needs a keyword, sir.");
+        }
+        return new FindCommand(trimmed);
     }
 
     private static Command parseOn(String dateText) throws AlfredException {

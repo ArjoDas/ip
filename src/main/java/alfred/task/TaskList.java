@@ -3,11 +3,12 @@ package alfred.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import alfred.AlfredException;
 
 /**
- * In-memory list of tasks, with operations to add, delete, and update them.
+ * In-memory list of tasks, with operations to add, find, delete, and update them.
  */
 public class TaskList {
     /** Tasks stored in the order they were added. */
@@ -98,6 +99,25 @@ public class TaskList {
      */
     public List<Task> getTasks() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /**
+     * Returns tasks whose description contains {@code keyword}, ignoring case.
+     * Date and time text is not searched.
+     *
+     * @param keyword Substring to look for in each description.
+     * @return Matching tasks in insertion order.
+     */
+    public List<Task> find(String keyword) {
+        String needle = keyword.toLowerCase(Locale.ENGLISH);
+        List<Task> matches = new ArrayList<>();
+        for (int i = 0; i < tasks.size(); i++) {
+            String description = tasks.get(i).getDescription().toLowerCase(Locale.ENGLISH);
+            if (description.contains(needle)) {
+                matches.add(tasks.get(i));
+            }
+        }
+        return matches;
     }
 
     private void checkIndex(int zeroBasedIndex) throws AlfredException {

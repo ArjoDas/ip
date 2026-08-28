@@ -374,3 +374,28 @@ Certainly. Here are the deadlines and events on Oct 15 2019:
 4.[E][ ] camp (from: Oct 14 2019 to: Oct 16 2019)
 Until next time. I shall be here should you require me.
 ```
+
+### 15. Find Tasks by Keyword
+
+**Aim:** List tasks whose description contains the given keyword, numbered from 1 among matches.
+
+**Inputs:**
+
+```text
+todo read book
+deadline return book /by 2019-06-06
+todo project meeting
+mark 1
+mark 2
+find book
+bye
+```
+
+**Expected output:**
+
+```text
+Here are the matching tasks in your list:
+1.[T][X] read book
+2.[D][X] return book (by: Jun 06 2019)
+Until next time. I shall be here should you require me.
+```

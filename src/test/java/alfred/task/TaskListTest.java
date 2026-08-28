@@ -85,6 +85,36 @@ public class TaskListTest {
     }
 
     @Test
+    public void find_keywordInDescription_returnsMatchingTasksInOrder() {
+        TaskList tasks = new TaskList();
+        Task readBook = new ToDo("read book");
+        Task meeting = new ToDo("project meeting");
+        Task returnBook = new Deadline("return book", TaskDateTime.parseUserInput("2019-06-06"));
+        tasks.add(readBook);
+        tasks.add(meeting);
+        tasks.add(returnBook);
+        readBook.markAsDone();
+        returnBook.markAsDone();
+
+        List<Task> matches = tasks.find("book");
+        assertEquals(2, matches.size());
+        assertSame(readBook, matches.get(0));
+        assertSame(returnBook, matches.get(1));
+    }
+
+    @Test
+    public void find_ignoresCaseAndSkipsDateText() {
+        TaskList tasks = new TaskList();
+        tasks.add(new ToDo("Read Book"));
+        tasks.add(new Deadline("submit report", TaskDateTime.parseUserInput("2019-06-06")));
+
+        List<Task> matches = tasks.find("BOOK");
+        assertEquals(1, matches.size());
+        assertEquals("Read Book", matches.get(0).getDescription());
+        assertEquals(0, tasks.find("June").size());
+    }
+
+    @Test
     public void copyConstructor_doesNotAliasCallerList() throws AlfredException {
         List<Task> original = new ArrayList<>();
         original.add(new ToDo("kept"));

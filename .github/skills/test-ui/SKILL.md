@@ -71,6 +71,7 @@ For the current Alfred UI, useful test inputs include:
 - `mark <one-based task number>`
 - `unmark <one-based task number>`
 - `list`
+- `find <keyword>`
 - `bye`
 
 Date and time values are strings; do not parse or reinterpret them during comparison.

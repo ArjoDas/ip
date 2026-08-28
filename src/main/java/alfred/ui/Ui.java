@@ -145,6 +145,24 @@ public class Ui {
         printLine();
     }
 
+    /**
+     * Prints tasks whose descriptions matched a {@code find} keyword.
+     * Matches are numbered from 1 in the order they appear in the list.
+     *
+     * @param tasks Matching tasks to display.
+     */
+    public void showFoundTasks(List<Task> tasks) {
+        printLine();
+        printMessage("Here are the matching tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            printMessage((i + 1) + "." + tasks.get(i).getDisplayText());
+        }
+        if (tasks.isEmpty()) {
+            printMessage("None, sir.");
+        }
+        printLine();
+    }
+
     /** Frames a single chatbot reply between divider lines. */
     private void showReply(String message) {
         printLine();
