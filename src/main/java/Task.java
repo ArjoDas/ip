@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task entered into Alfred.
  */
@@ -76,13 +78,8 @@ public abstract class Task {
             case "T" -> parts.length == 3 && !parts[2].isEmpty()
                     ? new ToDo(parts[2])
                     : null;
-            case "D" -> parts.length == 4 && !parts[2].isEmpty() && !parts[3].isEmpty()
-                    ? new Deadline(parts[2], parts[3])
-                    : null;
-            case "E" -> parts.length == 5 && !parts[2].isEmpty() && !parts[3].isEmpty()
-                    && !parts[4].isEmpty()
-                    ? new Event(parts[2], parts[3], parts[4])
-                    : null;
+            case "D" -> parseDeadline(parts);
+            case "E" -> parseEvent(parts);
             default -> null;
         };
         if (task != null && isDone) {
@@ -91,9 +88,44 @@ public abstract class Task {
         return task;
     }
 
+    /**
+     * Returns {@code true} if this task occurs on {@code date}.
+     * Todos never match; subclasses with dates override this.
+     *
+     * @param date Calendar date to test.
+     * @return {@code true} if this task falls on {@code date}.
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
+    }
+
     /** Returns {@code 1} if this task is done, otherwise {@code 0}. */
     protected int getStatusBit() {
         return status == TaskStatus.DONE ? 1 : 0;
+    }
+
+    private static Task parseDeadline(String[] parts) {
+        if (parts.length != 4 || parts[2].isEmpty() || parts[3].isEmpty()) {
+            return null;
+        }
+        TaskDateTime deadline = TaskDateTime.parseSaved(parts[3]);
+        if (deadline == null) {
+            return null;
+        }
+        return new Deadline(parts[2], deadline);
+    }
+
+    private static Task parseEvent(String[] parts) {
+        if (parts.length != 5 || parts[2].isEmpty() || parts[3].isEmpty()
+                || parts[4].isEmpty()) {
+            return null;
+        }
+        TaskDateTime from = TaskDateTime.parseSaved(parts[3]);
+        TaskDateTime to = TaskDateTime.parseSaved(parts[4]);
+        if (from == null || to == null) {
+            return null;
+        }
+        return new Event(parts[2], from, to);
     }
 
     /** Returns the type identifying this task. */

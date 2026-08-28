@@ -1,15 +1,17 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task with a specified start and end date or time.
  */
 public class Event extends Task {
     /** Start date or time of the event. */
-    private final String from;
+    private final TaskDateTime from;
 
     /** End date or time of the event. */
-    private final String to;
+    private final TaskDateTime to;
 
     /** Creates an incomplete event task. */
-    public Event(String description, String from, String to) {
+    public Event(String description, TaskDateTime from, TaskDateTime to) {
         super(description);
         this.from = from;
         this.to = to;
@@ -22,12 +24,19 @@ public class Event extends Task {
 
     @Override
     protected String getDateTimeText() {
-        return " (from: " + from + " to: " + to + ")";
+        return " (from: " + from.toDisplayString() + " to: " + to.toDisplayString() + ")";
     }
 
     @Override
     public String toSaveFormat() {
         return getType().getIcon() + " | " + getStatusBit() + " | " + description
-                + " | " + from + " | " + to;
+                + " | " + from.toSaveString() + " | " + to.toSaveString();
+    }
+
+    @Override
+    public boolean occursOn(LocalDate date) {
+        LocalDate start = from.toLocalDate();
+        LocalDate end = to.toLocalDate();
+        return !date.isBefore(start) && !date.isAfter(end);
     }
 }

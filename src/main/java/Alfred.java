@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 /**
@@ -16,6 +17,10 @@ public class Alfred {
 
     /** Indent applied to chatbot message text. */
     private static final String INDENT = "     ";
+
+    /** Hint shown when the user types a date Alfred cannot parse. */
+    private static final String DATE_FORMAT_HINT =
+            "I need a date as yyyy-MM-dd or d/M/yyyy, optionally followed by HHmm, sir.";
 
     private static final String BANNER =
             "        _    _  __              _\n"
@@ -62,6 +67,10 @@ public class Alfred {
             }
             if (command.equals("list")) {
                 showTaskList();
+            } else if (command.equals("on")) {
+                showError("an on command needs a date, sir.");
+            } else if (command.startsWith("on ")) {
+                showTasksOn(command.substring("on ".length()));
             } else if (command.startsWith("mark ")) {
                 updateTaskStatus(command, true);
             } else if (command.startsWith("unmark ")) {
@@ -156,7 +165,12 @@ public class Alfred {
             }
             return;
         }
-        addTask(new Deadline(description, deadline));
+        TaskDateTime by = TaskDateTime.parseUserInput(deadline);
+        if (by == null) {
+            showError(DATE_FORMAT_HINT);
+            return;
+        }
+        addTask(new Deadline(description, by));
     }
 
     /** Parses and stores an event command. */
@@ -175,7 +189,17 @@ public class Alfred {
             showError("an event needs a description and both date/time fields, sir.");
             return;
         }
-        addTask(new Event(description, from, to));
+        TaskDateTime fromDateTime = TaskDateTime.parseUserInput(from);
+        TaskDateTime toDateTime = TaskDateTime.parseUserInput(to);
+        if (fromDateTime == null || toDateTime == null) {
+            showError(DATE_FORMAT_HINT);
+            return;
+        }
+        if (fromDateTime.isAfter(toDateTime)) {
+            showError("an event cannot end before it starts, sir.");
+            return;
+        }
+        addTask(new Event(description, fromDateTime, toDateTime));
     }
 
     /** Displays all tasks in the order they were entered. */
@@ -184,6 +208,34 @@ public class Alfred {
         printMessage("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
             printMessage((i + 1) + "." + tasks[i].getDisplayText());
+        }
+        printLine();
+    }
+
+    /**
+     * Lists deadlines and events that fall on the given date, using original indices.
+     *
+     * @param dateText Date typed after the {@code on} command.
+     */
+    private static void showTasksOn(String dateText) {
+        TaskDateTime query = TaskDateTime.parseUserInput(dateText);
+        if (query == null) {
+            showError(DATE_FORMAT_HINT);
+            return;
+        }
+        LocalDate date = query.toLocalDate();
+        printLine();
+        printMessage("Certainly. Here are the deadlines and events on "
+                + query.toDisplayDate() + ":");
+        int matchCount = 0;
+        for (int i = 0; i < taskCount; i++) {
+            if (tasks[i].occursOn(date)) {
+                printMessage((i + 1) + "." + tasks[i].getDisplayText());
+                matchCount++;
+            }
+        }
+        if (matchCount == 0) {
+            printMessage("None, sir.");
         }
         printLine();
     }
