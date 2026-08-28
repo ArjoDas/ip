@@ -48,6 +48,7 @@ jar {
 }
 
 shadowJar {
+    // Fat JAR for distribution: copy build/libs/alfred.jar and run java -jar alfred.jar
     archiveFileName = 'alfred.jar'
 }
 
