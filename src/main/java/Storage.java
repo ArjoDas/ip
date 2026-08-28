@@ -22,19 +22,18 @@ public class Storage {
     }
 
     /**
-     * Returns the number of tasks loaded into {@code tasks}.
+     * Returns tasks loaded from disk.
      * Missing files are treated as an empty list. Corrupted lines are skipped.
      *
-     * @param tasks Destination array to fill from the start.
-     * @return Number of tasks loaded.
+     * @return Tasks read from the save file, in file order.
      * @throws IOException If the save file exists but cannot be read.
      */
-    public int load(Task[] tasks) throws IOException {
+    public List<Task> load() throws IOException {
         if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
-            return 0;
+            return new ArrayList<>();
         }
         List<String> lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
-        int taskCount = 0;
+        List<Task> tasks = new ArrayList<>();
         for (String line : lines) {
             if (line.isBlank()) {
                 continue;
@@ -43,30 +42,25 @@ public class Storage {
             if (task == null) {
                 continue;
             }
-            if (taskCount >= tasks.length) {
-                break;
-            }
-            tasks[taskCount] = task;
-            taskCount++;
+            tasks.add(task);
         }
-        return taskCount;
+        return tasks;
     }
 
     /**
      * Writes the given tasks to disk, creating the parent folder if needed.
      *
-     * @param tasks Tasks to write.
-     * @param taskCount Number of occupied slots in {@code tasks}.
+     * @param tasks Tasks to write, in the order they should be restored.
      * @throws IOException If the file cannot be created or written.
      */
-    public void save(Task[] tasks, int taskCount) throws IOException {
+    public void save(List<Task> tasks) throws IOException {
         Path parent = filePath.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
         List<String> lines = new ArrayList<>();
-        for (int i = 0; i < taskCount; i++) {
-            lines.add(tasks[i].toSaveFormat());
+        for (int i = 0; i < tasks.size(); i++) {
+            lines.add(tasks.get(i).toSaveFormat());
         }
         Files.write(filePath, lines, StandardCharsets.UTF_8);
     }
