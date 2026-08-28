@@ -1,6 +1,10 @@
+package alfred.task;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import alfred.AlfredException;
 
 /**
  * In-memory list of tasks, with operations to add, delete, and update them.

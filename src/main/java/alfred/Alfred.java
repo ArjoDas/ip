@@ -1,5 +1,13 @@
+package alfred;
+
 import java.io.IOException;
 import java.nio.file.Path;
+
+import alfred.command.Command;
+import alfred.parser.Parser;
+import alfred.storage.Storage;
+import alfred.task.TaskList;
+import alfred.ui.Ui;
 
 /**
  * Entry point for the Alfred chatbot.

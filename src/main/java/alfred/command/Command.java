@@ -1,5 +1,11 @@
+package alfred.command;
+
+import alfred.AlfredException;
+import alfred.task.TaskList;
+import alfred.ui.Ui;
+
 /**
- * An executable user command produced by {@link Parser}.
+ * An executable user command produced by {@link alfred.parser.Parser}.
  */
 public abstract class Command {
     /**

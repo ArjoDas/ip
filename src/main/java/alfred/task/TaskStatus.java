@@ -1,3 +1,5 @@
+package alfred.task;
+
 /**
  * Represents the completion status of a task.
  */

@@ -1,9 +1,13 @@
+package alfred.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import alfred.task.Task;
 
 /**
  * Reads and writes the task list as a text file on disk.
