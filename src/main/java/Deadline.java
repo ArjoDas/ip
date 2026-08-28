@@ -20,4 +20,10 @@ public class Deadline extends Task {
     protected String getDateTimeText() {
         return " (by: " + deadline + ")";
     }
+
+    @Override
+    public String toSaveFormat() {
+        return getType().getIcon() + " | " + getStatusBit() + " | " + description
+                + " | " + deadline;
+    }
 }
