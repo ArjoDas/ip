@@ -18,14 +18,25 @@ public class Alfred {
     private final TaskList tasks;
     private final Ui ui;
     private final boolean wasLoadError;
+    private boolean isExit;
+
+    /**
+     * Creates Alfred using tasks stored at {@code filePath}, with console output.
+     *
+     * @param filePath Relative path of the save file.
+     */
+    public Alfred(String filePath) {
+        this(filePath, true);
+    }
 
     /**
      * Creates Alfred using tasks stored at {@code filePath}.
      *
      * @param filePath Relative path of the save file.
+     * @param isConsole {@code true} to print framed console output.
      */
-    public Alfred(String filePath) {
-        ui = new Ui();
+    public Alfred(String filePath, boolean isConsole) {
+        ui = new Ui(isConsole);
         storage = new Storage(Path.of(filePath));
         TaskList loadedTasks;
         boolean isLoadError;
@@ -38,6 +49,7 @@ public class Alfred {
         }
         tasks = loadedTasks;
         wasLoadError = isLoadError;
+        isExit = false;
     }
 
     /** Greets the user and handles commands until {@code bye}. */
@@ -46,7 +58,7 @@ public class Alfred {
         if (wasLoadError) {
             ui.showLoadingError();
         }
-        boolean isExit = false;
+        isExit = false;
         while (!isExit) {
             try {
                 String fullCommand = ui.readCommand();
@@ -60,6 +72,43 @@ public class Alfred {
                 ui.showError(exception.getMessage());
             }
         }
+    }
+
+    /**
+     * Returns the opening greeting, without the ASCII banner.
+     *
+     * @return Welcome text, including a loading error when the save file cannot be read.
+     */
+    public String getGreeting() {
+        ui.showWelcome();
+        if (wasLoadError) {
+            ui.showLoadingError();
+        }
+        return ui.consumeReply();
+    }
+
+    /**
+     * Executes {@code input} as a command and returns Alfred's reply.
+     *
+     * @param input Raw command typed by the user.
+     * @return Chatbot reply for the GUI.
+     */
+    public String getResponse(String input) {
+        try {
+            Command command = Parser.parse(input);
+            command.execute(tasks, ui);
+            if (command.isMutating()) {
+                persistTasks();
+            }
+            isExit = command.isExit();
+        } catch (AlfredException exception) {
+            ui.showError(exception.getMessage());
+        }
+        return ui.consumeReply();
+    }
+
+    public boolean isExit() {
+        return isExit;
     }
 
     /** Writes the current task list to disk, reporting I/O failures to the user. */

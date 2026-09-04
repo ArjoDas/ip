@@ -8,14 +8,14 @@ import alfred.task.Task;
 import alfred.task.TaskDateTime;
 
 /**
- * Reads user input and prints chatbot replies.
+ * Reads user input and presents chatbot replies for the console or GUI.
  */
 public class Ui {
     /** Horizontal divider used to frame chatbot messages. */
     private static final String LINE =
             "    ____________________________________________________________";
 
-    /** Indent applied to chatbot message text. */
+    /** Indent applied to chatbot message text on the console. */
     private static final String INDENT = "     ";
 
     private static final String BANNER =
@@ -25,21 +25,40 @@ public class Ui {
                     + "     / ___ \\| |  _| | |  __/ (_| |\n"
                     + "    /_/   \\_\\_|_| |_|  \\___|\\__,_|";
 
-    /** Reads commands from standard input. */
+    /** Reads commands from standard input when running as a console app. */
     private final Scanner scanner;
 
-    /** Creates a UI that reads from standard input. */
+    /** {@code true} to print framed console output; {@code false} for GUI replies only. */
+    private final boolean isConsole;
+
+    /** Accumulates the latest reply so the GUI can display it. */
+    private final StringBuilder replyBuffer;
+
+    /** Creates a UI that reads from standard input and prints to the console. */
     public Ui() {
-        scanner = new Scanner(System.in);
+        this(true);
+    }
+
+    /**
+     * Creates a UI for the console or for collecting GUI replies.
+     *
+     * @param isConsole {@code true} to print framed console output.
+     */
+    public Ui(boolean isConsole) {
+        this.isConsole = isConsole;
+        this.scanner = isConsole ? new Scanner(System.in) : null;
+        this.replyBuffer = new StringBuilder();
     }
 
     /** Prints the welcome banner and opening prompt. */
     public void showWelcome() {
-        printLine();
-        System.out.println(BANNER);
-        printMessage("Good day. I'm Alfred, at your service.");
-        printMessage("How may I assist you?");
-        printLine();
+        startFrame();
+        if (isConsole) {
+            System.out.println(BANNER);
+        }
+        appendLine("Good day. I'm Alfred, at your service.");
+        appendLine("How may I assist you?");
+        endFrame();
     }
 
     /** Prints the farewell message. */
@@ -54,6 +73,17 @@ public class Ui {
      */
     public String readCommand() {
         return scanner.nextLine();
+    }
+
+    /**
+     * Returns the accumulated reply and clears the buffer.
+     *
+     * @return Latest chatbot reply, without console dividers or indent.
+     */
+    public String consumeReply() {
+        String reply = replyBuffer.toString();
+        replyBuffer.setLength(0);
+        return reply;
     }
 
     /**
@@ -77,9 +107,9 @@ public class Ui {
      * @param taskCount Number of tasks after the add.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        showReply("Very good. I've added this task:\n" + INDENT + "  "
+        showReply("Very good. I've added this task:\n  "
                 + task.getDisplayText() + "\n"
-                + INDENT + "You now have " + taskCount + " tasks in your list.");
+                + "You now have " + taskCount + " tasks in your list.");
     }
 
     /**
@@ -89,9 +119,9 @@ public class Ui {
      * @param taskCount Number of tasks after the deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        showReply("Noted. I've removed this task:\n" + INDENT + "  "
+        showReply("Noted. I've removed this task:\n  "
                 + task.getDisplayText() + "\n"
-                + INDENT + "Now you have " + taskCount + " tasks in the list.");
+                + "Now you have " + taskCount + " tasks in the list.");
     }
 
     /**
@@ -102,8 +132,8 @@ public class Ui {
      */
     public void showTaskMarked(Task task, boolean isDone) {
         String response = isDone
-                ? "Very good. I've marked this task as done:\n" + INDENT + "  "
-                : "Certainly. I've marked this task as not done:\n" + INDENT + "  ";
+                ? "Very good. I've marked this task as done:\n  "
+                : "Certainly. I've marked this task as not done:\n  ";
         showReply(response + task.getDisplayText());
     }
 
@@ -113,12 +143,12 @@ public class Ui {
      * @param tasks Tasks to display.
      */
     public void showTaskList(List<Task> tasks) {
-        printLine();
-        printMessage("Certainly. Here are the tasks in your list:");
+        startFrame();
+        appendLine("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            printMessage((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
         }
-        printLine();
+        endFrame();
     }
 
     /**
@@ -129,20 +159,20 @@ public class Ui {
      */
     public void showTasksOn(List<Task> tasks, TaskDateTime query) {
         LocalDate date = query.toLocalDate();
-        printLine();
-        printMessage("Certainly. Here are the deadlines and events on "
+        startFrame();
+        appendLine("Certainly. Here are the deadlines and events on "
                 + query.toDisplayDate() + ":");
         int matchCount = 0;
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).occursOn(date)) {
-                printMessage((i + 1) + "." + tasks.get(i).getDisplayText());
+                appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
                 matchCount++;
             }
         }
         if (matchCount == 0) {
-            printMessage("None, sir.");
+            appendLine("None, sir.");
         }
-        printLine();
+        endFrame();
     }
 
     /**
@@ -152,29 +182,46 @@ public class Ui {
      * @param tasks Matching tasks to display.
      */
     public void showFoundTasks(List<Task> tasks) {
-        printLine();
-        printMessage("Here are the matching tasks in your list:");
+        startFrame();
+        appendLine("Here are the matching tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            printMessage((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
         }
         if (tasks.isEmpty()) {
-            printMessage("None, sir.");
+            appendLine("None, sir.");
         }
-        printLine();
+        endFrame();
     }
 
     /** Frames a single chatbot reply between divider lines. */
     private void showReply(String message) {
-        printLine();
-        printMessage(message);
-        printLine();
+        startFrame();
+        String[] lines = message.split("\n", -1);
+        for (String line : lines) {
+            appendLine(line);
+        }
+        endFrame();
     }
 
-    private void printLine() {
-        System.out.println(LINE);
+    private void startFrame() {
+        if (isConsole) {
+            System.out.println(LINE);
+        }
     }
 
-    private void printMessage(String message) {
-        System.out.println(INDENT + message);
+    private void endFrame() {
+        if (isConsole) {
+            System.out.println(LINE);
+        }
+    }
+
+    private void appendLine(String line) {
+        if (replyBuffer.length() > 0) {
+            replyBuffer.append('\n');
+        }
+        replyBuffer.append(line);
+        if (isConsole) {
+            System.out.println(INDENT + line);
+        }
     }
 }
