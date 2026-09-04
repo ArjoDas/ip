@@ -13,7 +13,8 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/alfred/Alfred.java` file, right-click it, and choose `Run Alfred.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see a greeting. Alfred then echoes each command you type, and exits when you type `bye`:
+1. Run the **GUI** from the project root with `./gradlew run` (macOS / Linux) or `gradlew run` (Windows), or run `alfred.Launcher.main()` from the IDE. You should see Alfred's chat window. Type commands in the text field, press Enter or **Send**, and type `bye` to close the app.
+1. To use the **console** UI instead, locate `src/main/java/alfred/Alfred.java`, right-click it, and choose `Run Alfred.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see a greeting. Alfred then replies to each command you type, and exits when you type `bye`:
    ```
        ____________________________________________________________
            _    _  __              _
@@ -44,7 +45,7 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 Prerequisites: JDK 25.
 
-Alfred is packaged as a fat JAR with the Gradle Shadow plugin. The output includes the application classes and a `Main-Class` manifest entry so it can be launched with `java -jar`.
+Alfred is packaged as a fat JAR with the Gradle Shadow plugin. The output includes the application classes and a `Main-Class` manifest entry so it can be launched with `java -jar`. The JAR starts the GUI (`alfred.Launcher`).
 
 1. Open a terminal in the project root (the folder that contains `build.gradle`).
 1. Create the JAR:
