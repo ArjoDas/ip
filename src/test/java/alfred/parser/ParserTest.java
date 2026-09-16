@@ -236,6 +236,65 @@ public class ParserTest {
         assertEquals("[T][ ] keep this", tasks.get(0).getDisplayText());
     }
 
+    @Test
+    public void parse_listArchive_returnsListCommand() throws AlfredException {
+        Command command = Parser.parse("list archive");
+        assertInstanceOf(ListCommand.class, command);
+        assertFalse(command.isMutating());
+    }
+
+    @Test
+    public void parse_listUnknownArgument_throwsException() {
+        AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("list extra"));
+        assertEquals("a list command does not take that argument, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void parse_archiveWithoutArgument_throwsException() {
+        AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("archive"));
+        assertEquals("an archive command needs all or a task number, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void parse_restoreWithoutArgument_throwsException() {
+        AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("restore"));
+        assertEquals("a restore command needs all or a task number, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void parse_deleteArchiveWithoutNumber_throwsException() {
+        AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("delete archive"));
+        assertEquals("a delete archive command needs a task number, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void parse_archiveAllAndList_hidesLiveTasks() throws AlfredException {
+        TaskList tasks = new TaskList();
+        run(Parser.parse("todo read book"), tasks);
+        run(Parser.parse("todo return book"), tasks);
+        run(Parser.parse("archive all"), tasks);
+        assertEquals(0, tasks.size());
+        assertEquals(2, tasks.getArchivedTasks().size());
+        assertEquals("return book", tasks.getArchivedTasks().get(1).getDescription());
+    }
+
+    @Test
+    public void parse_restoreAndDeleteArchive_useArchiveNumbers() throws AlfredException {
+        TaskList tasks = new TaskList();
+        run(Parser.parse("todo first"), tasks);
+        run(Parser.parse("todo second"), tasks);
+        run(Parser.parse("archive 1"), tasks);
+        run(Parser.parse("restore 1"), tasks);
+        assertEquals(2, tasks.size());
+        assertEquals("second", tasks.get(0).getDescription());
+        assertEquals("first", tasks.get(1).getDescription());
+        run(Parser.parse("archive 2"), tasks);
+        run(Parser.parse("delete archive 1"), tasks);
+        assertEquals(1, tasks.size());
+        assertTrue(tasks.getArchivedTasks().isEmpty());
+        assertEquals("second", tasks.get(0).getDescription());
+    }
+
     /**
      * Executes {@code command} while discarding chatbot output.
      */

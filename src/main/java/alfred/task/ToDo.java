@@ -21,6 +21,7 @@ public class ToDo extends Task {
 
     @Override
     public String toSaveFormat() {
-        return getType().getIcon() + " | " + getStatusBit() + " | " + description;
+        return getType().getIcon() + " | " + getStatusBit() + " | " + description
+                + " | " + getArchiveBit();
     }
 }

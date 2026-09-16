@@ -399,3 +399,181 @@ Here are the matching tasks in your list:
 2.[D][X] return book (by: Jun 06 2019)
 Until next time. I shall be here should you require me.
 ```
+
+### 16. Archive All Then List Archive
+
+**Aim:** Verify that `archive all` hides live tasks and that `list archive` numbers archived tasks from 1.
+
+**Inputs:**
+
+```text
+todo read book
+todo return book
+archive all
+list
+list archive
+bye
+```
+
+**Expected output:**
+
+```text
+Very good. I've added this task:
+  [T][ ] read book
+You now have 1 tasks in your list.
+Very good. I've added this task:
+  [T][ ] return book
+You now have 2 tasks in your list.
+Very good. I've archived 2 tasks. Your list is empty.
+Certainly. Here are the tasks in your list:
+Certainly. Here are the archived tasks:
+1.[T][ ] read book
+2.[T][ ] return book
+Until next time. I shall be here should you require me.
+```
+
+### 17. Archive One Then Restore
+
+**Aim:** Verify live numbering skips archived tasks, and restore appends to the end of the live list.
+
+**Inputs:**
+
+```text
+todo first
+todo second
+archive 1
+list
+restore 1
+list
+bye
+```
+
+**Expected output:**
+
+```text
+Very good. I've added this task:
+  [T][ ] first
+You now have 1 tasks in your list.
+Very good. I've added this task:
+  [T][ ] second
+You now have 2 tasks in your list.
+Very good. I've archived 1 tasks.
+Certainly. Here are the tasks in your list:
+1.[T][ ] second
+Very good. I've restored 1 tasks.
+You now have 2 tasks in your list.
+Certainly. Here are the tasks in your list:
+1.[T][ ] second
+2.[T][ ] first
+Until next time. I shall be here should you require me.
+```
+
+### 18. Delete Archive
+
+**Aim:** Verify that `delete archive` permanently removes an archived task without restoring it.
+
+**Inputs:**
+
+```text
+todo keep
+todo gone
+archive 2
+delete archive 1
+list archive
+list
+bye
+```
+
+**Expected output:**
+
+```text
+Very good. I've added this task:
+  [T][ ] keep
+You now have 1 tasks in your list.
+Very good. I've added this task:
+  [T][ ] gone
+You now have 2 tasks in your list.
+Very good. I've archived 1 tasks.
+Noted. I've removed this task:
+  [T][ ] gone
+Now you have 1 tasks in the list.
+Certainly. Here are the archived tasks:
+None, sir.
+Certainly. Here are the tasks in your list:
+1.[T][ ] keep
+Until next time. I shall be here should you require me.
+```
+
+### 19. Archive Empty List
+
+**Aim:** Reject `archive all` when there are no live tasks and leave the list unchanged.
+
+**Inputs:**
+
+```text
+archive all
+list
+bye
+```
+
+**Expected output:**
+
+```text
+I'm afraid I must report: there are no tasks to archive, sir.
+Certainly. Here are the tasks in your list:
+Until next time. I shall be here should you require me.
+```
+
+### 20. Find Skips Archived Tasks
+
+**Aim:** Verify that `find` searches live descriptions only.
+
+**Inputs:**
+
+```text
+todo read book
+todo return book
+archive 2
+find book
+bye
+```
+
+**Expected output:**
+
+```text
+Very good. I've added this task:
+  [T][ ] read book
+You now have 1 tasks in your list.
+Very good. I've added this task:
+  [T][ ] return book
+You now have 2 tasks in your list.
+Very good. I've archived 1 tasks.
+Here are the matching tasks in your list:
+1.[T][ ] read book
+Until next time. I shall be here should you require me.
+```
+
+### 21. Extra List Argument
+
+**Aim:** Reject an unrecognized `list` argument without changing the task list.
+
+**Inputs:**
+
+```text
+todo keep this task
+list extra
+list
+bye
+```
+
+**Expected output:**
+
+```text
+Very good. I've added this task:
+  [T][ ] keep this task
+You now have 1 tasks in your list.
+I'm afraid I must report: a list command does not take that argument, sir.
+Certainly. Here are the tasks in your list:
+1.[T][ ] keep this task
+Until next time. I shall be here should you require me.
+```

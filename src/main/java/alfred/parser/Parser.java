@@ -2,6 +2,7 @@ package alfred.parser;
 
 import alfred.AlfredException;
 import alfred.command.AddCommand;
+import alfred.command.ArchiveCommand;
 import alfred.command.Command;
 import alfred.command.DeleteCommand;
 import alfred.command.ExitCommand;
@@ -9,6 +10,7 @@ import alfred.command.FindCommand;
 import alfred.command.ListCommand;
 import alfred.command.MarkCommand;
 import alfred.command.OnCommand;
+import alfred.command.RestoreCommand;
 import alfred.task.Deadline;
 import alfred.task.Event;
 import alfred.task.TaskDateTime;
@@ -51,8 +53,14 @@ public class Parser {
         if (fullCommand.equals("bye")) {
             return new ExitCommand();
         }
-        if (fullCommand.equals("list")) {
-            return new ListCommand();
+        if (isCommand(fullCommand, "list")) {
+            return parseList(argumentsAfter(fullCommand, "list"));
+        }
+        if (isCommand(fullCommand, "archive")) {
+            return parseArchive(argumentsAfter(fullCommand, "archive"));
+        }
+        if (isCommand(fullCommand, "restore")) {
+            return parseRestore(argumentsAfter(fullCommand, "restore"));
         }
         if (isCommand(fullCommand, "find")) {
             return parseFind(argumentsAfter(fullCommand, "find"));
@@ -67,7 +75,7 @@ public class Parser {
             return new MarkCommand(parseTaskIndex(argumentsAfter(fullCommand, "unmark")), false);
         }
         if (isCommand(fullCommand, "delete")) {
-            return new DeleteCommand(parseTaskIndex(argumentsAfter(fullCommand, "delete")));
+            return parseDelete(argumentsAfter(fullCommand, "delete"));
         }
         if (isCommand(fullCommand, "todo")) {
             return parseTodo(argumentsAfter(fullCommand, "todo"));
@@ -98,6 +106,53 @@ public class Parser {
             return "";
         }
         return fullCommand.substring((commandWord + " ").length());
+    }
+
+    private static Command parseList(String argument) throws AlfredException {
+        String trimmed = argument.trim();
+        if (trimmed.isEmpty()) {
+            return new ListCommand();
+        }
+        if (trimmed.equals("archive")) {
+            return new ListCommand(true);
+        }
+        throw new AlfredException("a list command does not take that argument, sir.");
+    }
+
+    private static Command parseArchive(String argument) throws AlfredException {
+        String trimmed = argument.trim();
+        if (trimmed.isEmpty()) {
+            throw new AlfredException("an archive command needs all or a task number, sir.");
+        }
+        if (trimmed.equals("all")) {
+            return ArchiveCommand.all();
+        }
+        return ArchiveCommand.at(parseTaskIndex(trimmed));
+    }
+
+    private static Command parseRestore(String argument) throws AlfredException {
+        String trimmed = argument.trim();
+        if (trimmed.isEmpty()) {
+            throw new AlfredException("a restore command needs all or a task number, sir.");
+        }
+        if (trimmed.equals("all")) {
+            return RestoreCommand.all();
+        }
+        return RestoreCommand.at(parseTaskIndex(trimmed));
+    }
+
+    private static Command parseDelete(String argument) throws AlfredException {
+        String trimmed = argument.trim();
+        if (trimmed.equals("archive") || trimmed.startsWith("archive ")) {
+            String archiveArgument = trimmed.equals("archive")
+                    ? ""
+                    : trimmed.substring("archive ".length());
+            if (archiveArgument.trim().isEmpty()) {
+                throw new AlfredException("a delete archive command needs a task number, sir.");
+            }
+            return new DeleteCommand(parseTaskIndex(archiveArgument.trim()), true);
+        }
+        return new DeleteCommand(parseTaskIndex(trimmed));
     }
 
     private static Command parseFind(String keyword) throws AlfredException {
@@ -184,11 +239,11 @@ public class Parser {
     }
 
     /**
-     * Returns the zero-based index from a {@code mark}, {@code unmark}, or {@code delete}
-     * argument.
+     * Returns the zero-based index from a numbered {@code mark}, {@code unmark},
+     * {@code delete}, {@code archive}, or {@code restore} argument.
      */
     private static int parseTaskIndex(String argument) throws AlfredException {
-        // parse() only delegates here for mark, unmark, and delete arguments.
+        // parse() only delegates here for numbered command arguments.
         assert argument != null : "parseTaskIndex is only given the index argument";
         try {
             int taskNumber = Integer.parseInt(argument);

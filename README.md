@@ -67,7 +67,7 @@ Alfred accepts one command per line. Type it in the console, or in the GUI text 
 
 Dates use `yyyy-MM-dd` (for example `2019-10-15`) or `d/M/yyyy` (for example `2/12/2019`). You may add a 24-hour time after the date as `HHmm` (for example `1800`) or with a colon (for example `18:00`). Free-text dates such as `Sunday` are rejected.
 
-Task numbers are 1-based in the order tasks were added. Use those numbers with `mark`, `unmark`, and `delete`. Adding, marking, unmarking, and deleting a task is saved to `data/alfred.txt`.
+Live task numbers are 1-based among tasks that are not archived. Use those numbers with `mark`, `unmark`, `delete`, and `archive`. Archive numbers from `list archive` are used with `restore` and `delete archive`. Adding, marking, unmarking, deleting, archiving, and restoring a task is saved to `data/alfred.txt`.
 
 ### `todo DESCRIPTION`
 
@@ -102,11 +102,15 @@ Shown as `[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)`.
 
 ### `list`
 
-Prints every task in insertion order, numbered from 1.
+Prints every live task in insertion order, numbered from 1. Archived tasks are hidden.
+
+### `list archive`
+
+Prints archived tasks in file order, numbered from 1 among archived tasks. If none are archived, Alfred replies `None, sir.` after the archive header.
 
 ### `mark INDEX` and `unmark INDEX`
 
-Marks the task at that list number as done (`[X]`) or not done (`[ ]`).
+Marks the live task at that list number as done (`[X]`) or not done (`[ ]`).
 
 ```
 mark 2
@@ -115,7 +119,7 @@ unmark 2
 
 ### `delete INDEX`
 
-Removes the task at that list number. Later tasks are renumbered.
+Permanently removes the live task at that list number. Later live tasks are renumbered. This does not archive the task.
 
 ```
 delete 2
@@ -123,7 +127,7 @@ delete 2
 
 ### `find KEYWORD`
 
-Lists tasks whose description contains `KEYWORD`, ignoring case. Date and time text is not searched. Matches are numbered from 1 in the order they appear.
+Lists live tasks whose description contains `KEYWORD`, ignoring case. Date and time text is not searched. Archived tasks are skipped. Matches are numbered from 1 in the order they appear.
 
 ```
 find book
@@ -133,7 +137,7 @@ If nothing matches, Alfred replies `None, sir.`
 
 ### `on DATE`
 
-Lists deadlines due on that calendar date, and events whose start-to-end range includes it. Todos never match. Matching tasks keep their original `list` numbers.
+Lists live deadlines due on that calendar date, and live events whose start-to-end range includes it. Todos never match. Matching tasks keep their current `list` numbers.
 
 ```
 on 2019-10-15
@@ -141,8 +145,48 @@ on 2019-10-15
 
 If nothing matches, Alfred replies `None, sir.`
 
+### `archive INDEX`
+
+Archives the live task at that list number so it is hidden from `list`, `find`, `on`, `mark`, `unmark`, and `delete`. Alfred reports how many tasks were archived, using `N tasks` even when the count is 1.
+
+```
+archive 2
+```
+
+### `archive all`
+
+Archives every remaining live task. Already archived tasks are left unchanged. If the live list is empty, Alfred reports an error. If that leaves no live tasks, Alfred also says `Your list is empty.`
+
+```
+archive all
+```
+
+### `restore INDEX`
+
+Restores the archived task at that `list archive` number to the end of the live list.
+
+```
+restore 1
+```
+
+### `restore all`
+
+Restores every archived task to the end of the live list, in current archive-list order. If nothing is archived, Alfred reports an error.
+
+```
+restore all
+```
+
+### `delete archive INDEX`
+
+Permanently removes the archived task at that `list archive` number. There is no bulk archive delete.
+
+```
+delete archive 1
+```
+
 ### `bye`
 
 Ends the session. Alfred replies `Until next time. I shall be here should you require me.`
 
-Unrecognized commands (for example `blah`), missing arguments, invalid dates, and out-of-range task numbers are reported as errors and do not change the task list.
+Unrecognized commands (for example `blah`), missing arguments, invalid dates, extra arguments, and out-of-range task numbers are reported as errors and do not change the task list.
