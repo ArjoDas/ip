@@ -63,8 +63,8 @@ public class Storage {
             Files.createDirectories(parent);
         }
         List<String> lines = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            lines.add(tasks.get(i).toSaveFormat());
+        for (Task task : tasks) {
+            lines.add(task.toSaveFormat());
         }
         Files.write(filePath, lines, StandardCharsets.UTF_8);
     }
