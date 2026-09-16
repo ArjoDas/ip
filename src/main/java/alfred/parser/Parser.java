@@ -49,46 +49,50 @@ public class Parser {
         if (fullCommand.equals("list")) {
             return new ListCommand();
         }
-        if (fullCommand.equals("find")) {
-            throw new AlfredException("a find command needs a keyword, sir.");
+        if (isCommand(fullCommand, "find")) {
+            return parseFind(argumentsAfter(fullCommand, "find"));
         }
-        if (fullCommand.startsWith("find ")) {
-            return parseFind(fullCommand.substring("find ".length()));
+        if (isCommand(fullCommand, "on")) {
+            return parseOn(argumentsAfter(fullCommand, "on"));
         }
-        if (fullCommand.equals("on")) {
-            throw new AlfredException("an on command needs a date, sir.");
+        if (isCommand(fullCommand, "mark")) {
+            return new MarkCommand(parseTaskIndex(argumentsAfter(fullCommand, "mark")), true);
         }
-        if (fullCommand.startsWith("on ")) {
-            return parseOn(fullCommand.substring("on ".length()));
+        if (isCommand(fullCommand, "unmark")) {
+            return new MarkCommand(parseTaskIndex(argumentsAfter(fullCommand, "unmark")), false);
         }
-        if (fullCommand.startsWith("mark ")) {
-            return new MarkCommand(parseTaskIndex(fullCommand), true);
+        if (isCommand(fullCommand, "delete")) {
+            return new DeleteCommand(parseTaskIndex(argumentsAfter(fullCommand, "delete")));
         }
-        if (fullCommand.startsWith("unmark ")) {
-            return new MarkCommand(parseTaskIndex(fullCommand), false);
+        if (isCommand(fullCommand, "todo")) {
+            return parseTodo(argumentsAfter(fullCommand, "todo"));
         }
-        if (fullCommand.startsWith("delete ")) {
-            return new DeleteCommand(parseTaskIndex(fullCommand));
+        if (isCommand(fullCommand, "deadline")) {
+            return parseDeadline(argumentsAfter(fullCommand, "deadline"));
         }
-        if (fullCommand.equals("todo")) {
-            throw new AlfredException("a todo requires a description, sir.");
-        }
-        if (fullCommand.startsWith("todo ")) {
-            return parseTodo(fullCommand.substring("todo ".length()));
-        }
-        if (fullCommand.equals("deadline")) {
-            throw new AlfredException("a deadline requires a description, sir.");
-        }
-        if (fullCommand.startsWith("deadline ")) {
-            return parseDeadline(fullCommand);
-        }
-        if (fullCommand.equals("event")) {
-            throw new AlfredException("an event requires a description and its times, sir.");
-        }
-        if (fullCommand.startsWith("event ")) {
-            return parseEvent(fullCommand);
+        if (isCommand(fullCommand, "event")) {
+            return parseEvent(argumentsAfter(fullCommand, "event"));
         }
         throw new AlfredException("I do not recognise that request, sir.");
+    }
+
+    /**
+     * Returns {@code true} if {@code fullCommand} is {@code commandWord}, or starts with that
+     * word followed by a space.
+     */
+    private static boolean isCommand(String fullCommand, String commandWord) {
+        return fullCommand.equals(commandWord)
+                || fullCommand.startsWith(commandWord + " ");
+    }
+
+    /**
+     * Returns the text after {@code commandWord}, or an empty string when the word stands alone.
+     */
+    private static String argumentsAfter(String fullCommand, String commandWord) {
+        if (fullCommand.equals(commandWord)) {
+            return "";
+        }
+        return fullCommand.substring((commandWord + " ").length());
     }
 
     private static Command parseFind(String keyword) throws AlfredException {
@@ -100,6 +104,9 @@ public class Parser {
     }
 
     private static Command parseOn(String dateText) throws AlfredException {
+        if (dateText.trim().isEmpty()) {
+            throw new AlfredException("an on command needs a date, sir.");
+        }
         TaskDateTime query = TaskDateTime.parseUserInput(dateText);
         if (query == null) {
             throw new AlfredException(DATE_FORMAT_HINT);
@@ -115,8 +122,10 @@ public class Parser {
         return new AddCommand(new ToDo(trimmedDescription));
     }
 
-    private static Command parseDeadline(String command) throws AlfredException {
-        String body = command.substring("deadline ".length());
+    private static Command parseDeadline(String body) throws AlfredException {
+        if (body.isEmpty()) {
+            throw new AlfredException("a deadline requires a description, sir.");
+        }
         int delimiter = body.indexOf(PREFIX_BY);
         if (delimiter < 0) {
             throw new AlfredException("a deadline needs a description and a /by date or time, sir.");
@@ -136,8 +145,10 @@ public class Parser {
         return new AddCommand(new Deadline(description, by));
     }
 
-    private static Command parseEvent(String command) throws AlfredException {
-        String body = command.substring("event ".length());
+    private static Command parseEvent(String body) throws AlfredException {
+        if (body.isEmpty()) {
+            throw new AlfredException("an event requires a description and its times, sir.");
+        }
         int fromDelimiter = body.indexOf(PREFIX_FROM);
         int toDelimiter = body.indexOf(PREFIX_TO);
         if (fromDelimiter < 0 || toDelimiter < 0 || toDelimiter < fromDelimiter) {
@@ -163,11 +174,11 @@ public class Parser {
 
     /**
      * Returns the zero-based index from a {@code mark}, {@code unmark}, or {@code delete}
-     * command.
+     * argument.
      */
-    private static int parseTaskIndex(String command) throws AlfredException {
+    private static int parseTaskIndex(String argument) throws AlfredException {
         try {
-            int taskNumber = Integer.parseInt(command.substring(command.indexOf(' ') + 1));
+            int taskNumber = Integer.parseInt(argument);
             return taskNumber - 1;
         } catch (NumberFormatException exception) {
             throw new AlfredException("please provide a valid task number, sir.");
