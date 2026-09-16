@@ -56,10 +56,9 @@ public class Storage {
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        List<String> lines = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            lines.add(tasks.get(i).toSaveFormat());
-        }
+        List<String> lines = tasks.stream()
+                .map(Task::toSaveFormat)
+                .toList();
         Files.write(filePath, lines, StandardCharsets.UTF_8);
     }
 }
