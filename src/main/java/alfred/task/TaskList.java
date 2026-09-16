@@ -109,12 +109,12 @@ public class TaskList {
      * @return Matching tasks in insertion order.
      */
     public List<Task> find(String keyword) {
-        String needle = keyword.toLowerCase(Locale.ENGLISH);
+        String normalizedKeyword = keyword.toLowerCase(Locale.ENGLISH);
         List<Task> matches = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            String description = tasks.get(i).getDescription().toLowerCase(Locale.ENGLISH);
-            if (description.contains(needle)) {
-                matches.add(tasks.get(i));
+        for (Task task : tasks) {
+            String description = task.getDescription().toLowerCase(Locale.ENGLISH);
+            if (description.contains(normalizedKeyword)) {
+                matches.add(task);
             }
         }
         return matches;
