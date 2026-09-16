@@ -192,8 +192,8 @@ public class ParserTest {
 
         String output = captured.toString();
         assertTrue(output.contains("Here are the matching tasks in your list:"));
-        assertTrue(output.contains("1.[T][X] read book"));
-        assertTrue(output.contains("2.[D][X] return book (by: Jun 06 2019)"));
+        assertTrue(output.contains("      1.[T][X] read book"));
+        assertTrue(output.contains("      2.[D][X] return book (by: Jun 06 2019)"));
         assertFalse(output.contains("project meeting"));
     }
 

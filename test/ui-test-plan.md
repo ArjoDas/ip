@@ -43,7 +43,7 @@ Very good. I've added this task:
   [T][ ] visit new theme park
 You now have 1 tasks in your list.
 Certainly. Here are the tasks in your list:
-1.[T][ ] visit new theme park
+ 1.[T][ ] visit new theme park
 Until next time. I shall be here should you require me.
 ```
 
@@ -66,7 +66,7 @@ Very good. I've added this task:
   [D][ ] submit report (by: Oct 15 2019)
 You now have 1 tasks in your list.
 Certainly. Here are the tasks in your list:
-1.[D][ ] submit report (by: Oct 15 2019)
+ 1.[D][ ] submit report (by: Oct 15 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -89,7 +89,7 @@ Very good. I've added this task:
   [E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)
 You now have 1 tasks in your list.
 Certainly. Here are the tasks in your list:
-1.[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)
+ 1.[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -116,15 +116,15 @@ bye
 Very good. I've marked this task as done:
   [D][X] return book (by: Oct 15 2019)
 Certainly. Here are the tasks in your list:
-1.[T][ ] read book
-2.[D][X] return book (by: Oct 15 2019)
-3.[E][ ] team meeting (from: Oct 15 2019 to: Oct 15 2019)
+ 1.[T][ ] read book
+ 2.[D][X] return book (by: Oct 15 2019)
+ 3.[E][ ] team meeting (from: Oct 15 2019 to: Oct 15 2019)
 Certainly. I've marked this task as not done:
   [D][ ] return book (by: Oct 15 2019)
 Here are the tasks in your list:
-1.[T][ ] read book
-2.[D][ ] return book (by: Oct 15 2019)
-3.[E][ ] team meeting (from: Oct 15 2019 to: Oct 15 2019)
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: Oct 15 2019)
+ 3.[E][ ] team meeting (from: Oct 15 2019 to: Oct 15 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -153,7 +153,7 @@ Got it. I've added this task:
   [T][ ] buy milk
 Now you have 1 tasks in the list.
 Here are the tasks in your list:
-1.[T][ ] buy milk
+ 1.[T][ ] buy milk
 Bye. Hope to see you again!
 ```
 
@@ -178,7 +178,7 @@ Very good. I've added this task:
   [D][ ] submit report (by: Oct 15 2019)
 You now have 1 tasks in your list.
 Certainly. Here are the tasks in your list:
-1.[D][ ] submit report (by: Oct 15 2019)
+ 1.[D][ ] submit report (by: Oct 15 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -203,7 +203,7 @@ Got it. I've added this task:
 Now you have 1 tasks in the list.
 I'm afraid I must report: I'm afraid I do not recognise that request, sir.
 Here are the tasks in your list:
-1.[T][ ] keep this task
+ 1.[T][ ] keep this task
 Bye. Hope to see you again soon!
 ```
 
@@ -228,7 +228,7 @@ Very good. I've added this task:
   [E][ ] project meeting (from: Oct 15 2019 to: Oct 15 2019)
 You now have 1 tasks in your list.
 Certainly. Here are the tasks in your list:
-1.[E][ ] project meeting (from: Oct 15 2019 to: Oct 15 2019)
+ 1.[E][ ] project meeting (from: Oct 15 2019 to: Oct 15 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -253,7 +253,7 @@ Got it. I've added this task:
 Now you have 1 tasks in the list.
 I'm afraid I must report: a deadline needs a description and a /by date or time, sir.
 Here are the tasks in your list:
-1.[T][ ] read book
+ 1.[T][ ] read book
 Bye. Hope to see you again soon!
 ```
 
@@ -278,7 +278,7 @@ Got it. I've added this task:
 Now you have 1 tasks in the list.
 I'm afraid I must report: an event needs a description, a /from time, and a /to time, sir.
 Here are the tasks in your list:
-1.[T][ ] attend class
+ 1.[T][ ] attend class
 Bye. Hope to see you again soon!
 ```
 
@@ -305,7 +305,7 @@ Now you have 1 tasks in the list.
 I'm afraid I must report: that task number does not exist, sir.
 I'm afraid I must report: please provide a valid task number, sir.
 Here are the tasks in your list:
-1.[T][ ] read book
+ 1.[T][ ] read book
 Bye. Hope to see you again soon!
 ```
 
@@ -370,8 +370,8 @@ bye
 
 ```text
 Certainly. Here are the deadlines and events on Oct 15 2019:
-2.[D][ ] return book (by: Oct 15 2019)
-4.[E][ ] camp (from: Oct 14 2019 to: Oct 16 2019)
+ 2.[D][ ] return book (by: Oct 15 2019)
+ 4.[E][ ] camp (from: Oct 14 2019 to: Oct 16 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -395,8 +395,8 @@ bye
 
 ```text
 Here are the matching tasks in your list:
-1.[T][X] read book
-2.[D][X] return book (by: Jun 06 2019)
+ 1.[T][X] read book
+ 2.[D][X] return book (by: Jun 06 2019)
 Until next time. I shall be here should you require me.
 ```
 
@@ -427,8 +427,8 @@ You now have 2 tasks in your list.
 Very good. I've archived 2 tasks. Your list is empty.
 Certainly. Here are the tasks in your list:
 Certainly. Here are the archived tasks:
-1.[T][ ] read book
-2.[T][ ] return book
+ 1.[T][ ] read book
+ 2.[T][ ] return book
 Until next time. I shall be here should you require me.
 ```
 
@@ -459,12 +459,12 @@ Very good. I've added this task:
 You now have 2 tasks in your list.
 Very good. I've archived 1 tasks.
 Certainly. Here are the tasks in your list:
-1.[T][ ] second
+ 1.[T][ ] second
 Very good. I've restored 1 tasks.
 You now have 2 tasks in your list.
 Certainly. Here are the tasks in your list:
-1.[T][ ] second
-2.[T][ ] first
+ 1.[T][ ] second
+ 2.[T][ ] first
 Until next time. I shall be here should you require me.
 ```
 
@@ -500,7 +500,7 @@ Now you have 1 tasks in the list.
 Certainly. Here are the archived tasks:
 None, sir.
 Certainly. Here are the tasks in your list:
-1.[T][ ] keep
+ 1.[T][ ] keep
 Until next time. I shall be here should you require me.
 ```
 
@@ -549,7 +549,7 @@ Very good. I've added this task:
 You now have 2 tasks in your list.
 Very good. I've archived 1 tasks.
 Here are the matching tasks in your list:
-1.[T][ ] read book
+ 1.[T][ ] read book
 Until next time. I shall be here should you require me.
 ```
 
@@ -574,6 +574,6 @@ Very good. I've added this task:
 You now have 1 tasks in your list.
 I'm afraid I must report: a list command does not take that argument, sir.
 Certainly. Here are the tasks in your list:
-1.[T][ ] keep this task
+ 1.[T][ ] keep this task
 Until next time. I shall be here should you require me.
 ```

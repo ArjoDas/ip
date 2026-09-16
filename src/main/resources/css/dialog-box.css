@@ -15,6 +15,17 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 14, 0.3, 0, 4);
 }
 
+.list-label {
+    -fx-font: 13px "Menlo";
+    -fx-font-family: "Menlo", "Consolas", "Courier New", monospace;
+    -fx-font-size: 13px;
+}
+
+.error-label {
+    -fx-background-color: #3a181c;
+    -fx-text-fill: #f3efe4;
+}
+
 #displayPicture {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 16, 0.4, 0, 4);
 }
