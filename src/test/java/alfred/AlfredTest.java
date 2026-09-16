@@ -41,7 +41,8 @@ public class AlfredTest {
     public void getResponse_unknownCommand_showsError() {
         Alfred alfred = newAlfred();
         String response = alfred.getResponse("blah");
-        assertEquals("I'm afraid I must report: I do not recognise that request, sir.",
+        assertEquals("I'm afraid I must report: I do not recognise that request, sir. "
+                        + "Type help to see what I can do.",
                 response);
     }
 
@@ -119,6 +120,24 @@ public class AlfredTest {
     public void getLastReplyStyle_find_isList() {
         Alfred alfred = newAlfred();
         alfred.getResponse("find book");
+        assertEquals(Ui.ReplyStyle.LIST, alfred.getLastReplyStyle());
+    }
+
+    @Test
+    public void getResponse_help_listsCommands() {
+        Alfred alfred = newAlfred();
+        String response = alfred.getResponse("help");
+        assertTrue(response.contains("Certainly. These are the commands I understand:"));
+        assertTrue(response.contains("todo DESCRIPTION"));
+        assertTrue(response.contains("deadline DESCRIPTION /by DATE"));
+        assertTrue(response.contains("bye"));
+        assertFalse(alfred.isExit());
+    }
+
+    @Test
+    public void getLastReplyStyle_help_isList() {
+        Alfred alfred = newAlfred();
+        alfred.getResponse("help");
         assertEquals(Ui.ReplyStyle.LIST, alfred.getLastReplyStyle());
     }
 

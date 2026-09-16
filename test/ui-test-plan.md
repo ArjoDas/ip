@@ -201,7 +201,7 @@ bye
 Got it. I've added this task:
   [T][ ] keep this task
 Now you have 1 tasks in the list.
-I'm afraid I must report: I'm afraid I do not recognise that request, sir.
+I'm afraid I must report: I do not recognise that request, sir. Type help to see what I can do.
 Here are the tasks in your list:
  1.[T][ ] keep this task
 Bye. Hope to see you again soon!
@@ -223,7 +223,7 @@ bye
 **Expected output:**
 
 ```text
-I'm afraid I must report: I do not recognise that request, sir.
+I'm afraid I must report: I do not recognise that request, sir. Type help to see what I can do.
 Very good. I've added this task:
   [E][ ] project meeting (from: Oct 15 2019 to: Oct 15 2019)
 You now have 1 tasks in your list.

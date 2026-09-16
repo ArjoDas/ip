@@ -63,7 +63,7 @@ Tasks are saved in `data/alfred.txt` next to the JAR (the folder you ran the com
 
 ## Using CLI commands
 
-Alfred accepts one command per line. Type it in the console, or in the GUI text field and press Enter or **Send**. Command words are case-sensitive and must be the first word on the line. `list` and `bye` must be typed exactly, with no extra text.
+Alfred accepts one command per line. Type it in the console, or in the GUI text field and press Enter or **Send**. Command words are case-sensitive and must be the first word on the line. `list`, `help`, and `bye` must be typed exactly, with no extra text.
 
 Dates use `yyyy-MM-dd` (for example `2019-10-15`) or `d/M/yyyy` (for example `2/12/2019`). You may add a 24-hour time after the date as `HHmm` (for example `1800`) or with a colon (for example `18:00`). Free-text dates such as `Sunday` are rejected.
 
@@ -185,8 +185,16 @@ Permanently removes the archived task at that `list archive` number. There is no
 delete archive 1
 ```
 
+### `help`
+
+Prints the commands Alfred understands, one syntax line each. `help` must be typed exactly, with no extra text.
+
+```
+help
+```
+
 ### `bye`
 
 Ends the session. Alfred replies `Until next time. I shall be here should you require me.`
 
-Unrecognized commands (for example `blah`), missing arguments, invalid dates, extra arguments, and out-of-range task numbers are reported as errors and do not change the task list.
+Unrecognized commands (for example `blah`) report an error and tell you to type `help`. Missing arguments, invalid dates, extra arguments, and out-of-range task numbers are also reported as errors and do not change the task list.

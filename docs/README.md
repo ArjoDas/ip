@@ -1,6 +1,6 @@
 # Alfred User Guide
 
-Alfred is a chatbot that stores todos, deadlines, and events. Type one command per line in the GUI text field or in the console. Command words are case-sensitive and must be the first word on the line.
+Alfred is a chatbot that stores todos, deadlines, and events. Type one command per line in the GUI text field or in the console. Command words are case-sensitive and must be the first word on the line. `list`, `help`, and `bye` must be typed exactly, with no extra text.
 
 Dates use `yyyy-MM-dd` (for example `2019-10-15`) or `d/M/yyyy` (for example `2/12/2019`). You may add a 24-hour time after the date as `HHmm` (for example `1800`) or with a colon (for example `18:00`). Free-text dates such as `Sunday` are rejected.
 
@@ -134,10 +134,20 @@ Permanently removes the archived task at that `list archive` number. There is no
 delete archive 1
 ```
 
+## Help
+
+### `help`
+
+Prints the commands Alfred understands, one syntax line each. `help` must be typed exactly, with no extra text.
+
+```
+help
+```
+
 ## Exiting
 
 ### `bye`
 
 Ends the session. Alfred replies `Until next time. I shall be here should you require me.` `bye` must be typed exactly, with no extra text.
 
-Unrecognized commands (for example `blah`), missing arguments, invalid dates, extra arguments, and out-of-range task numbers are reported as errors and do not change the task list.
+Unrecognized commands (for example `blah`) report an error and tell you to type `help`. Missing arguments, invalid dates, extra arguments, and out-of-range task numbers are also reported as errors and do not change the task list.
