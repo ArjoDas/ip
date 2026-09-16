@@ -136,6 +136,50 @@ public class Ui {
     }
 
     /**
+     * Confirms that {@code archivedCount} live tasks were archived.
+     *
+     * @param archivedCount Number of tasks just archived.
+     * @param liveCount Number of live tasks remaining.
+     */
+    public void showTasksArchived(int archivedCount, int liveCount) {
+        assert archivedCount >= 1 : "Archive confirmation is only shown after archiving a task";
+        String reply = "Very good. I've archived " + archivedCount + " tasks.";
+        if (liveCount == 0) {
+            reply += " Your list is empty.";
+        }
+        showReply(reply);
+    }
+
+    /**
+     * Confirms that {@code restoredCount} archived tasks were restored.
+     *
+     * @param restoredCount Number of tasks just restored.
+     * @param liveCount Number of live tasks after the restore.
+     */
+    public void showTasksRestored(int restoredCount, int liveCount) {
+        assert restoredCount >= 1 : "Restore confirmation is only shown after restoring a task";
+        showReply("Very good. I've restored " + restoredCount + " tasks.\n"
+                + "You now have " + liveCount + " tasks in your list.");
+    }
+
+    /**
+     * Prints archived tasks in file order.
+     *
+     * @param tasks Archived tasks to display.
+     */
+    public void showArchivedTaskList(List<Task> tasks) {
+        startFrame();
+        appendLine("Certainly. Here are the archived tasks:");
+        for (int i = 0; i < tasks.size(); i++) {
+            appendNumberedTask(i, tasks.get(i));
+        }
+        if (tasks.isEmpty()) {
+            appendLine("None, sir.");
+        }
+        endFrame();
+    }
+
+    /**
      * Confirms that {@code task} was marked or unmarked.
      *
      * @param task Updated task.

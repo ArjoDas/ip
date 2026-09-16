@@ -54,7 +54,7 @@ public class Storage {
      * @throws IOException If the file cannot be created or written.
      */
     public void save(List<Task> tasks) throws IOException {
-        // TaskList.getTasks() always returns a concrete list of stored tasks.
+        // TaskList.getAllTasks() always returns a concrete list of stored tasks.
         assert tasks != null : "Task list to save should not be null";
         Path parent = filePath.getParent();
         if (parent != null) {

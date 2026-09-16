@@ -103,21 +103,27 @@ public class Alfred {
         try {
             Command command = Parser.parse(input);
             assert command != null : "Parser returns a command when parsing succeeds";
+            if (command.isMutating()) {
+                tasks.saveSnapshot();
+            }
             command.execute(tasks, ui);
             if (command.isMutating()) {
                 persistTasks();
             }
             isExit = command.isExit();
         } catch (AlfredException exception) {
+            tasks.restoreSnapshot();
             ui.showError(exception.getMessage());
         }
     }
 
-    /** Writes the current task list to disk, reporting I/O failures to the user. */
+    /** Writes every stored task to disk, rolling back memory if the write fails. */
     private void persistTasks() {
         try {
-            storage.save(tasks.getTasks());
+            storage.save(tasks.getAllTasks());
+            tasks.discardSnapshot();
         } catch (IOException exception) {
+            tasks.restoreSnapshot();
             ui.showError("I could not save your tasks, sir.");
         }
     }
