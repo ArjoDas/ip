@@ -60,3 +60,89 @@ To run a distributed copy:
 1. Run `java -jar alfred.jar`.
 
 Tasks are saved in `data/alfred.txt` next to the JAR (the folder you ran the command from), not inside the project directory.
+
+## Using CLI commands
+
+Alfred accepts one command per line. Type it in the console, or in the GUI text field and press Enter or **Send**. Command words are case-sensitive and must be the first word on the line. `list` and `bye` must be typed exactly, with no extra text.
+
+Dates use `yyyy-MM-dd` (for example `2019-10-15`) or `d/M/yyyy` (for example `2/12/2019`). You may add a 24-hour time after the date as `HHmm` (for example `1800`) or with a colon (for example `18:00`). Free-text dates such as `Sunday` are rejected.
+
+Task numbers are 1-based in the order tasks were added. Use those numbers with `mark`, `unmark`, and `delete`. Adding, marking, unmarking, and deleting a task is saved to `data/alfred.txt`.
+
+### `todo DESCRIPTION`
+
+Adds a todo. The description cannot be blank.
+
+```
+todo read book
+```
+
+Alfred stores it as `[T][ ] read book` and reports how many tasks are in the list.
+
+### `deadline DESCRIPTION /by DATE`
+
+Adds a deadline. Both a description and a `/by` date (or date-time) are required.
+
+```
+deadline submit report /by 2019-10-15
+deadline return book /by 2/12/2019 1800
+```
+
+Dates display as `MMM dd yyyy` (for example `Oct 15 2019`). Times display as `MMM dd yyyy, h:mma` (for example `Dec 02 2019, 6:00PM`).
+
+### `event DESCRIPTION /from START /to END`
+
+Adds an event. `/from` must come before `/to`, and the end cannot be earlier than the start.
+
+```
+event project meeting /from 2019-10-15 /to 2019-10-16
+```
+
+Shown as `[E][ ] project meeting (from: Oct 15 2019 to: Oct 16 2019)`.
+
+### `list`
+
+Prints every task in insertion order, numbered from 1.
+
+### `mark INDEX` and `unmark INDEX`
+
+Marks the task at that list number as done (`[X]`) or not done (`[ ]`).
+
+```
+mark 2
+unmark 2
+```
+
+### `delete INDEX`
+
+Removes the task at that list number. Later tasks are renumbered.
+
+```
+delete 2
+```
+
+### `find KEYWORD`
+
+Lists tasks whose description contains `KEYWORD`, ignoring case. Date and time text is not searched. Matches are numbered from 1 in the order they appear.
+
+```
+find book
+```
+
+If nothing matches, Alfred replies `None, sir.`
+
+### `on DATE`
+
+Lists deadlines due on that calendar date, and events whose start-to-end range includes it. Todos never match. Matching tasks keep their original `list` numbers.
+
+```
+on 2019-10-15
+```
+
+If nothing matches, Alfred replies `None, sir.`
+
+### `bye`
+
+Ends the session. Alfred replies `Until next time. I shall be here should you require me.`
+
+Unrecognized commands (for example `blah`), missing arguments, invalid dates, and out-of-range task numbers are reported as errors and do not change the task list.
