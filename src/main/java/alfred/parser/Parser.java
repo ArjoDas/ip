@@ -22,6 +22,15 @@ public class Parser {
     private static final String DATE_FORMAT_HINT =
             "I need a date as yyyy-MM-dd or d/M/yyyy, optionally followed by HHmm, sir.";
 
+    /** Deadline delimiter that introduces the due date. */
+    private static final String PREFIX_BY = "/by";
+
+    /** Event delimiter that introduces the start date or time. */
+    private static final String PREFIX_FROM = "/from";
+
+    /** Event delimiter that introduces the end date or time. */
+    private static final String PREFIX_TO = "/to";
+
     /** Prevents instantiation; {@link #parse(String)} is the only entry point. */
     private Parser() {
     }
@@ -107,12 +116,12 @@ public class Parser {
 
     private static Command parseDeadline(String command) throws AlfredException {
         String body = command.substring("deadline ".length());
-        int delimiter = body.indexOf("/by");
+        int delimiter = body.indexOf(PREFIX_BY);
         if (delimiter < 0) {
             throw new AlfredException("a deadline needs a description and a /by date or time, sir.");
         }
         String description = body.substring(0, delimiter).trim();
-        String deadline = body.substring(delimiter + 3).trim();
+        String deadline = body.substring(delimiter + PREFIX_BY.length()).trim();
         if (description.trim().isEmpty() || deadline.trim().isEmpty()) {
             if (description.trim().isEmpty()) {
                 throw new AlfredException("a deadline needs a description, sir.");
@@ -128,15 +137,15 @@ public class Parser {
 
     private static Command parseEvent(String command) throws AlfredException {
         String body = command.substring("event ".length());
-        int fromDelimiter = body.indexOf("/from");
-        int toDelimiter = body.indexOf("/to");
+        int fromDelimiter = body.indexOf(PREFIX_FROM);
+        int toDelimiter = body.indexOf(PREFIX_TO);
         if (fromDelimiter < 0 || toDelimiter < 0 || toDelimiter < fromDelimiter) {
             throw new AlfredException(
                     "an event needs a description, a /from time, and a /to time, sir.");
         }
         String description = body.substring(0, fromDelimiter).trim();
-        String from = body.substring(fromDelimiter + 5, toDelimiter).trim();
-        String to = body.substring(toDelimiter + 3).trim();
+        String from = body.substring(fromDelimiter + PREFIX_FROM.length(), toDelimiter).trim();
+        String to = body.substring(toDelimiter + PREFIX_TO.length()).trim();
         if (description.trim().isEmpty() || from.trim().isEmpty() || to.trim().isEmpty()) {
             throw new AlfredException("an event needs a description and both date/time fields, sir.");
         }
