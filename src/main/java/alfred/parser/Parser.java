@@ -31,6 +31,9 @@ public class Parser {
     /** Event delimiter that introduces the end date or time. */
     private static final String PREFIX_TO = "/to";
 
+    /** Difference between the 1-based number the user types and the 0-based list index. */
+    private static final int USER_NUMBERING_OFFSET = 1;
+
     /** Prevents instantiation; {@link #parse(String)} is the only entry point. */
     private Parser() {
     }
@@ -179,7 +182,7 @@ public class Parser {
     private static int parseTaskIndex(String argument) throws AlfredException {
         try {
             int taskNumber = Integer.parseInt(argument);
-            return taskNumber - 1;
+            return taskNumber - USER_NUMBERING_OFFSET;
         } catch (NumberFormatException exception) {
             throw new AlfredException("please provide a valid task number, sir.");
         }

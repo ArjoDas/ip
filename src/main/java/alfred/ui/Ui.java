@@ -18,6 +18,9 @@ public class Ui {
     /** Indent applied to chatbot message text on the console. */
     private static final String INDENT = "     ";
 
+    /** Difference between a 0-based list index and the 1-based number shown to the user. */
+    private static final int USER_NUMBERING_OFFSET = 1;
+
     private static final String BANNER =
             "        _    _  __              _\n"
                     + "       / \\  | |/ _|_ __ ___  __| |\n"
@@ -198,7 +201,7 @@ public class Ui {
      * list number.
      */
     private void appendNumberedTask(int zeroBasedIndex, Task task) {
-        int displayNumber = zeroBasedIndex + 1;
+        int displayNumber = zeroBasedIndex + USER_NUMBERING_OFFSET;
         appendLine(displayNumber + "." + task.getDisplayText());
     }
 
