@@ -34,11 +34,12 @@ public class MainWindow extends AnchorPane {
     private final Image alfredImage = new Image(this.getClass().getResourceAsStream("/images/alfred.png"));
 
     /**
-     * Keeps the conversation scrolled to the latest message.
+     * Keeps the conversation scrolled to the latest message and focuses the command field.
      */
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        Platform.runLater(() -> userInput.requestFocus());
     }
 
     /**

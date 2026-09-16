@@ -15,6 +15,7 @@
     -fx-faint-focus-color: transparent;
     -fx-highlight-fill: #2e2e38;
     -fx-highlight-text-fill: #eceae6;
+    -fx-padding: 8px 10px;
 }
 
 .text-field:focused {
@@ -29,6 +30,7 @@
     -fx-border-width: 0;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
 }
 
 .button:hover {
