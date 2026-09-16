@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import alfred.task.Task;
 
@@ -39,18 +40,11 @@ public class Storage {
             return new ArrayList<>();
         }
         List<String> lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
-        List<Task> tasks = new ArrayList<>();
-        for (String line : lines) {
-            if (line.isBlank()) {
-                continue;
-            }
-            Task task = Task.fromSaveLine(line);
-            if (task == null) {
-                continue;
-            }
-            tasks.add(task);
-        }
-        return tasks;
+        return lines.stream()
+                .filter(line -> !line.isBlank())
+                .map(Task::fromSaveLine)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     /**
@@ -66,11 +60,12 @@ public class Storage {
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        List<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
-            assert task != null : "Cannot save a null task";
-            lines.add(task.toSaveFormat());
-        }
+        List<String> lines = tasks.stream()
+                .map(task -> {
+                    assert task != null : "Cannot save a null task";
+                    return task.toSaveFormat();
+                })
+                .toList();
         Files.write(filePath, lines, StandardCharsets.UTF_8);
     }
 }

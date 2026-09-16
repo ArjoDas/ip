@@ -6,6 +6,7 @@ import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -148,13 +149,11 @@ public class TaskDateTime {
     }
 
     private static DateTimeFormatter[] formatters(String... patterns) {
-        DateTimeFormatter[] formatters = new DateTimeFormatter[patterns.length];
-        for (int i = 0; i < patterns.length; i++) {
-            formatters[i] = DateTimeFormatter.ofPattern(patterns[i])
-                    .withChronology(IsoChronology.INSTANCE)
-                    .withResolverStyle(ResolverStyle.STRICT)
-                    .withLocale(Locale.ENGLISH);
-        }
-        return formatters;
+        return Arrays.stream(patterns)
+                .map(pattern -> DateTimeFormatter.ofPattern(pattern)
+                        .withChronology(IsoChronology.INSTANCE)
+                        .withResolverStyle(ResolverStyle.STRICT)
+                        .withLocale(Locale.ENGLISH))
+                .toArray(DateTimeFormatter[]::new);
     }
 }

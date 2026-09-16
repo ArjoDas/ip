@@ -120,14 +120,12 @@ public class TaskList {
         // Parser rejects a missing or blank find keyword before this is called.
         assert keyword != null && !keyword.isBlank() : "Find keyword should already be validated";
         String normalizedKeyword = keyword.toLowerCase(Locale.ENGLISH);
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            String description = task.getDescription().toLowerCase(Locale.ENGLISH);
-            if (description.contains(normalizedKeyword)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> {
+                    String description = task.getDescription().toLowerCase(Locale.ENGLISH);
+                    return description.contains(normalizedKeyword);
+                })
+                .toList();
     }
 
     private void checkIndex(int zeroBasedIndex) throws AlfredException {
