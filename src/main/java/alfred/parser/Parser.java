@@ -7,6 +7,7 @@ import alfred.command.Command;
 import alfred.command.DeleteCommand;
 import alfred.command.ExitCommand;
 import alfred.command.FindCommand;
+import alfred.command.HelpCommand;
 import alfred.command.ListCommand;
 import alfred.command.MarkCommand;
 import alfred.command.OnCommand;
@@ -52,6 +53,9 @@ public class Parser {
         assert fullCommand != null : "Command text should not be null";
         if (fullCommand.equals("bye")) {
             return new ExitCommand();
+        }
+        if (isCommand(fullCommand, "help")) {
+            return parseHelp(argumentsAfter(fullCommand, "help"));
         }
         if (isCommand(fullCommand, "list")) {
             return parseList(argumentsAfter(fullCommand, "list"));
@@ -117,6 +121,13 @@ public class Parser {
             return new ListCommand(true);
         }
         throw new AlfredException("a list command does not take that argument, sir.");
+    }
+
+    private static Command parseHelp(String argument) throws AlfredException {
+        if (!argument.trim().isEmpty()) {
+            throw new AlfredException("a help command does not take that argument, sir.");
+        }
+        return new HelpCommand();
     }
 
     private static Command parseArchive(String argument) throws AlfredException {

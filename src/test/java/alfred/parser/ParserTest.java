@@ -16,6 +16,7 @@ import alfred.AlfredException;
 import alfred.command.Command;
 import alfred.command.ExitCommand;
 import alfred.command.FindCommand;
+import alfred.command.HelpCommand;
 import alfred.command.ListCommand;
 import alfred.command.OnCommand;
 import alfred.task.TaskList;
@@ -39,6 +40,20 @@ public class ParserTest {
         assertInstanceOf(ListCommand.class, command);
         assertFalse(command.isExit());
         assertFalse(command.isMutating());
+    }
+
+    @Test
+    public void parse_help_returnsHelpCommand() throws AlfredException {
+        Command command = Parser.parse("help");
+        assertInstanceOf(HelpCommand.class, command);
+        assertFalse(command.isExit());
+        assertFalse(command.isMutating());
+    }
+
+    @Test
+    public void parse_helpWithArgument_throwsException() {
+        AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("help extra"));
+        assertEquals("a help command does not take that argument, sir.", exception.getMessage());
     }
 
     @Test

@@ -40,6 +40,27 @@ public class Ui {
                     + "     / ___ \\| |  _| | |  __/ (_| |\n"
                     + "    /_/   \\_\\_|_| |_|  \\___|\\__,_|";
 
+    /** One syntax line per command shown by {@code help}. */
+    private static final String[] HELP_SYNTAX_LINES = {
+        "todo DESCRIPTION",
+        "deadline DESCRIPTION /by DATE",
+        "event DESCRIPTION /from START /to END",
+        "list",
+        "list archive",
+        "find KEYWORD",
+        "on DATE",
+        "mark INDEX",
+        "unmark INDEX",
+        "delete INDEX",
+        "delete archive INDEX",
+        "archive INDEX",
+        "archive all",
+        "restore INDEX",
+        "restore all",
+        "help",
+        "bye"
+    };
+
     /** Reads commands from standard input when running as a console app. */
     private final Scanner scanner;
 
@@ -83,6 +104,16 @@ public class Ui {
     /** Prints the farewell message. */
     public void showGoodbye() {
         showReply("Until next time. I shall be here should you require me.");
+    }
+
+    /** Prints the compact list of commands Alfred understands. */
+    public void showHelp() {
+        startListFrame();
+        appendLine("Certainly. These are the commands I understand:");
+        for (String syntaxLine : HELP_SYNTAX_LINES) {
+            appendLine(syntaxLine);
+        }
+        endFrame();
     }
 
     /**

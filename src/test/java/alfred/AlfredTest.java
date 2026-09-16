@@ -123,6 +123,24 @@ public class AlfredTest {
     }
 
     @Test
+    public void getResponse_help_listsCommands() {
+        Alfred alfred = newAlfred();
+        String response = alfred.getResponse("help");
+        assertTrue(response.contains("Certainly. These are the commands I understand:"));
+        assertTrue(response.contains("todo DESCRIPTION"));
+        assertTrue(response.contains("deadline DESCRIPTION /by DATE"));
+        assertTrue(response.contains("bye"));
+        assertFalse(alfred.isExit());
+    }
+
+    @Test
+    public void getLastReplyStyle_help_isList() {
+        Alfred alfred = newAlfred();
+        alfred.getResponse("help");
+        assertEquals(Ui.ReplyStyle.LIST, alfred.getLastReplyStyle());
+    }
+
+    @Test
     public void getLastReplyStyle_todo_isNormal() {
         Alfred alfred = newAlfred();
         alfred.getResponse("todo read book");
