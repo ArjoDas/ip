@@ -100,11 +100,14 @@ public abstract class Task {
         } else {
             return null;
         }
-        Task task = switch (typeIcon) {
-            case "T" -> parseTodo(parts);
-            case "D" -> parseDeadline(parts);
-            case "E" -> parseEvent(parts);
-            default -> null;
+        TaskType type = TaskType.fromIcon(typeIcon);
+        if (type == null) {
+            return null;
+        }
+        Task task = switch (type) {
+            case TODO -> parseTodo(parts);
+            case DEADLINE -> parseDeadline(parts);
+            case EVENT -> parseEvent(parts);
         };
         if (task != null && isDone) {
             task.markAsDone();
