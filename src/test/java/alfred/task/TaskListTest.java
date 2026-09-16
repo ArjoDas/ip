@@ -1,8 +1,10 @@
 package alfred.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,5 +124,129 @@ public class TaskListTest {
         original.add(new ToDo("extra"));
         assertEquals(1, tasks.size());
         assertEquals("kept", tasks.get(0).getDescription());
+    }
+
+    @Test
+    public void archive_hidesTaskFromLiveListAndRenumbers() throws AlfredException {
+        TaskList tasks = new TaskList();
+        Task first = new ToDo("first");
+        Task second = new ToDo("second");
+        Task third = new ToDo("third");
+        tasks.add(first);
+        tasks.add(second);
+        tasks.add(third);
+
+        Task archived = tasks.archive(1);
+        assertSame(second, archived);
+        assertTrue(second.isArchived());
+        assertEquals(2, tasks.size());
+        assertSame(first, tasks.get(0));
+        assertSame(third, tasks.get(1));
+        assertEquals(1, tasks.getArchivedTasks().size());
+        assertSame(second, tasks.getArchivedTasks().get(0));
+    }
+
+    @Test
+    public void archiveAll_emptyLiveList_throwsException() {
+        TaskList tasks = new TaskList();
+        AlfredException exception = assertThrows(AlfredException.class, tasks::archiveAll);
+        assertEquals("there are no tasks to archive, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void restoreAll_emptyArchive_throwsException() {
+        TaskList tasks = new TaskList();
+        tasks.add(new ToDo("live"));
+        AlfredException exception = assertThrows(AlfredException.class, tasks::restoreAll);
+        assertEquals("there are no archived tasks, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void deleteArchived_emptyArchive_throwsException() {
+        TaskList tasks = new TaskList();
+        AlfredException exception = assertThrows(AlfredException.class, () -> tasks.deleteArchived(0));
+        assertEquals("there are no archived tasks, sir.", exception.getMessage());
+    }
+
+    @Test
+    public void restore_appendsToEndOfLiveList() throws AlfredException {
+        TaskList tasks = new TaskList();
+        Task first = new ToDo("first");
+        Task second = new ToDo("second");
+        Task third = new ToDo("third");
+        tasks.add(first);
+        tasks.add(second);
+        tasks.add(third);
+        tasks.archive(0);
+        tasks.archive(0);
+
+        Task restored = tasks.restore(0);
+        assertSame(first, restored);
+        assertFalse(first.isArchived());
+        assertEquals(2, tasks.size());
+        assertSame(third, tasks.get(0));
+        assertSame(first, tasks.get(1));
+    }
+
+    @Test
+    public void restoreAll_preservesArchiveOrder() throws AlfredException {
+        TaskList tasks = new TaskList();
+        Task first = new ToDo("first");
+        Task second = new ToDo("second");
+        Task third = new ToDo("third");
+        tasks.add(first);
+        tasks.add(second);
+        tasks.add(third);
+        tasks.archive(0);
+        tasks.archive(0);
+
+        int restoredCount = tasks.restoreAll();
+        assertEquals(2, restoredCount);
+        assertEquals(3, tasks.size());
+        assertSame(third, tasks.get(0));
+        assertSame(first, tasks.get(1));
+        assertSame(second, tasks.get(2));
+        assertTrue(tasks.getArchivedTasks().isEmpty());
+    }
+
+    @Test
+    public void deleteArchived_removesPermanently() throws AlfredException {
+        TaskList tasks = new TaskList();
+        Task keep = new ToDo("keep");
+        Task gone = new ToDo("gone");
+        tasks.add(keep);
+        tasks.add(gone);
+        tasks.archive(1);
+
+        Task deleted = tasks.deleteArchived(0);
+        assertSame(gone, deleted);
+        assertEquals(1, tasks.size());
+        assertTrue(tasks.getArchivedTasks().isEmpty());
+        assertEquals(1, tasks.getAllTasks().size());
+    }
+
+    @Test
+    public void delete_liveIndex_cannotSeeArchivedTask() throws AlfredException {
+        TaskList tasks = new TaskList();
+        tasks.add(new ToDo("live"));
+        Task archived = new ToDo("archived");
+        tasks.add(archived);
+        tasks.archive(1);
+        AlfredException exception = assertThrows(AlfredException.class, () -> tasks.delete(1));
+        assertEquals("that task number does not exist, sir.", exception.getMessage());
+        assertTrue(archived.isArchived());
+    }
+
+    @Test
+    public void find_skipsArchivedTasks() throws AlfredException {
+        TaskList tasks = new TaskList();
+        Task live = new ToDo("read book");
+        Task archived = new ToDo("return book");
+        tasks.add(live);
+        tasks.add(archived);
+        tasks.archive(1);
+        List<Task> matches = tasks.find("book");
+        assertEquals(1, matches.size());
+        assertSame(live, matches.get(0));
     }
 }
