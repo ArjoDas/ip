@@ -146,7 +146,7 @@ public class Ui {
         startFrame();
         appendLine("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendNumberedTask(i, tasks.get(i));
         }
         endFrame();
     }
@@ -165,7 +165,7 @@ public class Ui {
         int matchCount = 0;
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).occursOn(date)) {
-                appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+                appendNumberedTask(i, tasks.get(i));
                 matchCount++;
             }
         }
@@ -185,12 +185,21 @@ public class Ui {
         startFrame();
         appendLine("Here are the matching tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendNumberedTask(i, tasks.get(i));
         }
         if (tasks.isEmpty()) {
             appendLine("None, sir.");
         }
         endFrame();
+    }
+
+    /**
+     * Appends a task as {@code n.displayText}, converting {@code zeroBasedIndex} to a 1-based
+     * list number.
+     */
+    private void appendNumberedTask(int zeroBasedIndex, Task task) {
+        int displayNumber = zeroBasedIndex + 1;
+        appendLine(displayNumber + "." + task.getDisplayText());
     }
 
     /** Frames a single chatbot reply between divider lines. */
