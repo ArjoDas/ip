@@ -30,6 +30,8 @@ public class TaskDateTime {
     private final boolean hasTime;
 
     private TaskDateTime(LocalDateTime dateTime, boolean hasTime) {
+        // Every factory method constructs this only after a successful parse.
+        assert dateTime != null : "TaskDateTime always wraps a concrete date-time";
         this.dateTime = dateTime;
         this.hasTime = hasTime;
     }
@@ -111,6 +113,8 @@ public class TaskDateTime {
      * @return {@code true} if this instant is later than {@code other}.
      */
     public boolean isAfter(TaskDateTime other) {
+        // Event parsing compares two successfully parsed date-times.
+        assert other != null : "Comparison requires another TaskDateTime";
         return dateTime.isAfter(other.dateTime);
     }
 

@@ -25,6 +25,8 @@ public class TaskList {
      * @param tasks Tasks to copy into the list.
      */
     public TaskList(List<Task> tasks) {
+        // Storage.load() always returns a concrete list, even when the file is missing.
+        assert tasks != null : "Initial task list should not be null";
         this.tasks = new ArrayList<>(tasks);
     }
 
@@ -34,6 +36,8 @@ public class TaskList {
      * @param task Task to add.
      */
     public void add(Task task) {
+        // AddCommand is only created with a parsed ToDo, Deadline, or Event.
+        assert task != null : "Cannot add a null task to the list";
         tasks.add(task);
     }
 
@@ -46,7 +50,9 @@ public class TaskList {
      */
     public Task delete(int zeroBasedIndex) throws AlfredException {
         checkIndex(zeroBasedIndex);
-        return tasks.remove(zeroBasedIndex);
+        Task removed = tasks.remove(zeroBasedIndex);
+        assert removed != null : "TaskList should not store null tasks";
+        return removed;
     }
 
     /**
@@ -58,7 +64,9 @@ public class TaskList {
      */
     public Task get(int zeroBasedIndex) throws AlfredException {
         checkIndex(zeroBasedIndex);
-        return tasks.get(zeroBasedIndex);
+        Task task = tasks.get(zeroBasedIndex);
+        assert task != null : "TaskList should not store null tasks";
+        return task;
     }
 
     /**
@@ -109,6 +117,8 @@ public class TaskList {
      * @return Matching tasks in insertion order.
      */
     public List<Task> find(String keyword) {
+        // Parser rejects a missing or blank find keyword before this is called.
+        assert keyword != null && !keyword.isBlank() : "Find keyword should already be validated";
         String needle = keyword.toLowerCase(Locale.ENGLISH);
         List<Task> matches = new ArrayList<>();
         for (int i = 0; i < tasks.size(); i++) {
