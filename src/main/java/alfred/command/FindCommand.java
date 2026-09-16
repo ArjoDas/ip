@@ -16,6 +16,8 @@ public class FindCommand extends Command {
      * @param keyword Text typed after the {@code find} command.
      */
     public FindCommand(String keyword) {
+        // Parser rejects a missing or blank keyword before constructing this command.
+        assert keyword != null && !keyword.isBlank() : "Find keyword should already be validated";
         this.keyword = keyword;
     }
 

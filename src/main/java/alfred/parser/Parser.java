@@ -34,6 +34,8 @@ public class Parser {
      * @throws AlfredException If the line is not a recognized, well-formed command.
      */
     public static Command parse(String fullCommand) throws AlfredException {
+        // Console and GUI always pass the raw command line, never null.
+        assert fullCommand != null : "Command text should not be null";
         if (fullCommand.equals("bye")) {
             return new ExitCommand();
         }
@@ -106,6 +108,8 @@ public class Parser {
     }
 
     private static Command parseDeadline(String command) throws AlfredException {
+        // parse() only delegates here after matching the deadline prefix.
+        assert command.startsWith("deadline ") : "parseDeadline is only called for deadline commands";
         String body = command.substring("deadline ".length());
         int delimiter = body.indexOf("/by");
         if (delimiter < 0) {
@@ -123,10 +127,13 @@ public class Parser {
         if (by == null) {
             throw new AlfredException(DATE_FORMAT_HINT);
         }
+        assert !description.isEmpty() : "Empty deadline descriptions should have been rejected";
         return new AddCommand(new Deadline(description, by));
     }
 
     private static Command parseEvent(String command) throws AlfredException {
+        // parse() only delegates here after matching the event prefix.
+        assert command.startsWith("event ") : "parseEvent is only called for event commands";
         String body = command.substring("event ".length());
         int fromDelimiter = body.indexOf("/from");
         int toDelimiter = body.indexOf("/to");
@@ -148,6 +155,7 @@ public class Parser {
         if (fromDateTime.isAfter(toDateTime)) {
             throw new AlfredException("an event cannot end before it starts, sir.");
         }
+        assert !fromDateTime.isAfter(toDateTime) : "Events that end before they start should have been rejected";
         return new AddCommand(new Event(description, fromDateTime, toDateTime));
     }
 
@@ -155,6 +163,9 @@ public class Parser {
      * Returns the zero-based index from a {@code mark} or {@code unmark} command.
      */
     private static int parseTaskIndex(String command) throws AlfredException {
+        // parse() only delegates here for mark and unmark commands that include a space.
+        assert command.startsWith("mark ") || command.startsWith("unmark ")
+                : "parseTaskIndex is only called for mark or unmark commands";
         try {
             int taskNumber = Integer.parseInt(command.substring(command.indexOf(' ') + 1));
             return taskNumber - 1;
@@ -167,6 +178,8 @@ public class Parser {
      * Returns the zero-based index from a {@code delete} command.
      */
     private static int parseDeleteIndex(String command) throws AlfredException {
+        // parse() only delegates here after matching the delete prefix.
+        assert command.startsWith("delete ") : "parseDeleteIndex is only called for delete commands";
         try {
             int taskNumber = Integer.parseInt(command.substring("delete ".length()));
             return taskNumber - 1;

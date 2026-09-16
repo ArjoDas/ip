@@ -36,6 +36,9 @@ public class DialogBox extends HBox {
             throw new RuntimeException("Failed to load a dialog box.", exception);
         }
 
+        // DialogBox.fxml must wire both the message label and the avatar.
+        assert dialog != null : "DialogBox.fxml must inject the dialog label";
+        assert displayPicture != null : "DialogBox.fxml must inject the avatar image view";
         dialog.setText(text);
         displayPicture.setImage(img);
         HBox.setHgrow(dialog, Priority.ALWAYS);
