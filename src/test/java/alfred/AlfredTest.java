@@ -41,7 +41,8 @@ public class AlfredTest {
     public void getResponse_unknownCommand_showsError() {
         Alfred alfred = newAlfred();
         String response = alfred.getResponse("blah");
-        assertEquals("I'm afraid I must report: I do not recognise that request, sir.",
+        assertEquals("I'm afraid I must report: I do not recognise that request, sir. "
+                        + "Type help to see what I can do.",
                 response);
     }
 

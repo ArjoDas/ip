@@ -90,7 +90,7 @@ public class Parser {
         if (isCommand(fullCommand, "event")) {
             return parseEvent(argumentsAfter(fullCommand, "event"));
         }
-        throw new AlfredException("I do not recognise that request, sir.");
+        throw new AlfredException("I do not recognise that request, sir. Type help to see what I can do.");
     }
 
     /**

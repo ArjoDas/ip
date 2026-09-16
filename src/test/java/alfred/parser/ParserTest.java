@@ -156,7 +156,8 @@ public class ParserTest {
     @Test
     public void parse_unknownCommand_throwsException() {
         AlfredException exception = assertThrows(AlfredException.class, () -> Parser.parse("blah"));
-        assertEquals("I do not recognise that request, sir.", exception.getMessage());
+        assertEquals("I do not recognise that request, sir. Type help to see what I can do.",
+                exception.getMessage());
     }
 
     @Test
