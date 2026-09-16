@@ -108,10 +108,11 @@ public class Parser {
     }
 
     private static Command parseTodo(String description) throws AlfredException {
-        if (description.trim().isEmpty()) {
+        String trimmedDescription = description.trim();
+        if (trimmedDescription.isEmpty()) {
             throw new AlfredException("a todo requires a description, sir.");
         }
-        return new AddCommand(new ToDo(description));
+        return new AddCommand(new ToDo(trimmedDescription));
     }
 
     private static Command parseDeadline(String command) throws AlfredException {
@@ -122,10 +123,10 @@ public class Parser {
         }
         String description = body.substring(0, delimiter).trim();
         String deadline = body.substring(delimiter + PREFIX_BY.length()).trim();
-        if (description.trim().isEmpty() || deadline.trim().isEmpty()) {
-            if (description.trim().isEmpty()) {
-                throw new AlfredException("a deadline needs a description, sir.");
-            }
+        if (description.isEmpty()) {
+            throw new AlfredException("a deadline needs a description, sir.");
+        }
+        if (deadline.isEmpty()) {
             throw new AlfredException("a deadline needs a date or time after /by, sir.");
         }
         TaskDateTime by = TaskDateTime.parseUserInput(deadline);
@@ -146,7 +147,7 @@ public class Parser {
         String description = body.substring(0, fromDelimiter).trim();
         String from = body.substring(fromDelimiter + PREFIX_FROM.length(), toDelimiter).trim();
         String to = body.substring(toDelimiter + PREFIX_TO.length()).trim();
-        if (description.trim().isEmpty() || from.trim().isEmpty() || to.trim().isEmpty()) {
+        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw new AlfredException("an event needs a description and both date/time fields, sir.");
         }
         TaskDateTime fromDateTime = TaskDateTime.parseUserInput(from);
