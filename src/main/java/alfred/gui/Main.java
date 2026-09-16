@@ -13,6 +13,9 @@ import javafx.stage.Stage;
  * JavaFX application that hosts Alfred's chat window.
  */
 public class Main extends Application {
+    private static final int MIN_WINDOW_HEIGHT = 220;
+    private static final int MIN_WINDOW_WIDTH = 417;
+
     private final Alfred alfred = new Alfred("data/alfred.txt", false);
 
     /**
@@ -28,8 +31,8 @@ public class Main extends Application {
             Scene scene = new Scene(ap);
             stage.setScene(scene);
             stage.setTitle("Alfred");
-            stage.setMinHeight(220);
-            stage.setMinWidth(417);
+            stage.setMinHeight(MIN_WINDOW_HEIGHT);
+            stage.setMinWidth(MIN_WINDOW_WIDTH);
             fxmlLoader.<MainWindow>getController().setAlfred(alfred);
             stage.show();
         } catch (IOException exception) {

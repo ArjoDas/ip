@@ -12,6 +12,8 @@ public class Deadline extends Task {
     /** Creates an incomplete deadline task. */
     public Deadline(String description, TaskDateTime deadline) {
         super(description);
+        // Parser and save loading only construct a deadline after parsing a due date.
+        assert deadline != null : "A deadline task must have a due date";
         this.deadline = deadline;
     }
 

@@ -18,6 +18,9 @@ public class Ui {
     /** Indent applied to chatbot message text on the console. */
     private static final String INDENT = "     ";
 
+    /** Difference between a 0-based list index and the 1-based number shown to the user. */
+    private static final int USER_NUMBERING_OFFSET = 1;
+
     private static final String BANNER =
             "        _    _  __              _\n"
                     + "       / \\  | |/ _|_ __ ___  __| |\n"
@@ -72,6 +75,8 @@ public class Ui {
      * @return Raw command text, not including the trailing newline.
      */
     public String readCommand() {
+        // readCommand is used only by the console loop, which constructs Ui with a scanner.
+        assert scanner != null : "readCommand is only used in console mode";
         return scanner.nextLine();
     }
 
@@ -107,6 +112,9 @@ public class Ui {
      * @param taskCount Number of tasks after the add.
      */
     public void showTaskAdded(Task task, int taskCount) {
+        // AddCommand shows a confirmation only after inserting a task.
+        assert task != null : "Added task should exist";
+        assert taskCount >= 1 : "Adding a task leaves at least one item in the list";
         showReply("Very good. I've added this task:\n  "
                 + task.getDisplayText() + "\n"
                 + "You now have " + taskCount + " tasks in your list.");
@@ -119,6 +127,9 @@ public class Ui {
      * @param taskCount Number of tasks after the deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
+        // DeleteCommand shows a confirmation only after a successful removal.
+        assert task != null : "Deleted task should exist";
+        assert taskCount >= 0 : "Task count cannot be negative after a deletion";
         showReply("Noted. I've removed this task:\n  "
                 + task.getDisplayText() + "\n"
                 + "Now you have " + taskCount + " tasks in the list.");
@@ -146,7 +157,7 @@ public class Ui {
         startFrame();
         appendLine("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendNumberedTask(i, tasks.get(i));
         }
         endFrame();
     }
@@ -158,6 +169,8 @@ public class Ui {
      * @param query Date typed after the {@code on} command.
      */
     public void showTasksOn(List<Task> tasks, TaskDateTime query) {
+        // OnCommand is only created with a successfully parsed date.
+        assert query != null : "Date query should already be parsed";
         LocalDate date = query.toLocalDate();
         startFrame();
         appendLine("Certainly. Here are the deadlines and events on "
@@ -165,7 +178,7 @@ public class Ui {
         int matchCount = 0;
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).occursOn(date)) {
-                appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+                appendNumberedTask(i, tasks.get(i));
                 matchCount++;
             }
         }
@@ -185,12 +198,21 @@ public class Ui {
         startFrame();
         appendLine("Here are the matching tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendNumberedTask(i, tasks.get(i));
         }
         if (tasks.isEmpty()) {
             appendLine("None, sir.");
         }
         endFrame();
+    }
+
+    /**
+     * Appends a task as {@code n.displayText}, converting {@code zeroBasedIndex} to a 1-based
+     * list number.
+     */
+    private void appendNumberedTask(int zeroBasedIndex, Task task) {
+        int displayNumber = zeroBasedIndex + USER_NUMBERING_OFFSET;
+        appendLine(displayNumber + "." + task.getDisplayText());
     }
 
     /** Frames a single chatbot reply between divider lines. */

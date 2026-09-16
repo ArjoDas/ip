@@ -31,6 +31,8 @@ public class TaskDateTime {
     private final boolean hasTime;
 
     private TaskDateTime(LocalDateTime dateTime, boolean hasTime) {
+        // Every factory method constructs this only after a successful parse.
+        assert dateTime != null : "TaskDateTime always wraps a concrete date-time";
         this.dateTime = dateTime;
         this.hasTime = hasTime;
     }
@@ -67,16 +69,11 @@ public class TaskDateTime {
             return null;
         }
         String trimmed = text.trim();
-        try {
-            return new TaskDateTime(LocalDateTime.parse(trimmed), true);
-        } catch (DateTimeParseException exception) {
-            try {
-                LocalDate date = LocalDate.parse(trimmed);
-                return new TaskDateTime(date.atStartOfDay(), false);
-            } catch (DateTimeParseException nestedException) {
-                return null;
-            }
+        TaskDateTime dateTime = parseIsoDateTime(trimmed);
+        if (dateTime != null) {
+            return dateTime;
         }
+        return parseIsoDate(trimmed);
     }
 
     /** Returns this value formatted for chatbot replies. */
@@ -112,7 +109,26 @@ public class TaskDateTime {
      * @return {@code true} if this instant is later than {@code other}.
      */
     public boolean isAfter(TaskDateTime other) {
+        // Event parsing compares two successfully parsed date-times.
+        assert other != null : "Comparison requires another TaskDateTime";
         return dateTime.isAfter(other.dateTime);
+    }
+
+    private static TaskDateTime parseIsoDateTime(String text) {
+        try {
+            return new TaskDateTime(LocalDateTime.parse(text), true);
+        } catch (DateTimeParseException exception) {
+            return null;
+        }
+    }
+
+    private static TaskDateTime parseIsoDate(String text) {
+        try {
+            LocalDate date = LocalDate.parse(text);
+            return new TaskDateTime(date.atStartOfDay(), false);
+        } catch (DateTimeParseException exception) {
+            return null;
+        }
     }
 
     private static TaskDateTime parseWithFormatters(String text, DateTimeFormatter[] formatters,

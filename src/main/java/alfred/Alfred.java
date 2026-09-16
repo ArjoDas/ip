@@ -36,6 +36,8 @@ public class Alfred {
      * @param isConsole {@code true} to print framed console output.
      */
     public Alfred(String filePath, boolean isConsole) {
+        // Both the console and GUI entry points supply a save-file path.
+        assert filePath != null && !filePath.isBlank() : "Save file path should be provided";
         ui = new Ui(isConsole);
         storage = new Storage(Path.of(filePath));
         TaskList loadedTasks;
@@ -54,23 +56,10 @@ public class Alfred {
 
     /** Greets the user and handles commands until {@code bye}. */
     public void run() {
-        ui.showWelcome();
-        if (wasLoadError) {
-            ui.showLoadingError();
-        }
+        showOpeningMessages();
         isExit = false;
         while (!isExit) {
-            try {
-                String fullCommand = ui.readCommand();
-                Command command = Parser.parse(fullCommand);
-                command.execute(tasks, ui);
-                if (command.isMutating()) {
-                    persistTasks();
-                }
-                isExit = command.isExit();
-            } catch (AlfredException exception) {
-                ui.showError(exception.getMessage());
-            }
+            processCommand(ui.readCommand());
         }
     }
 
@@ -80,10 +69,7 @@ public class Alfred {
      * @return Welcome text, including a loading error when the save file cannot be read.
      */
     public String getGreeting() {
-        ui.showWelcome();
-        if (wasLoadError) {
-            ui.showLoadingError();
-        }
+        showOpeningMessages();
         return ui.consumeReply();
     }
 
@@ -94,8 +80,29 @@ public class Alfred {
      * @return Chatbot reply for the GUI.
      */
     public String getResponse(String input) {
+        processCommand(input);
+        String reply = ui.consumeReply();
+        assert !reply.isEmpty() : "Every command path should produce a reply for the GUI";
+        return reply;
+    }
+
+    public boolean isExit() {
+        return isExit;
+    }
+
+    /** Shows the welcome text and a loading error when the save file cannot be read. */
+    private void showOpeningMessages() {
+        ui.showWelcome();
+        if (wasLoadError) {
+            ui.showLoadingError();
+        }
+    }
+
+    /** Parses and executes {@code input}, persisting the list when the command mutates it. */
+    private void processCommand(String input) {
         try {
             Command command = Parser.parse(input);
+            assert command != null : "Parser returns a command when parsing succeeds";
             command.execute(tasks, ui);
             if (command.isMutating()) {
                 persistTasks();
@@ -104,11 +111,6 @@ public class Alfred {
         } catch (AlfredException exception) {
             ui.showError(exception.getMessage());
         }
-        return ui.consumeReply();
-    }
-
-    public boolean isExit() {
-        return isExit;
     }
 
     /** Writes the current task list to disk, reporting I/O failures to the user. */

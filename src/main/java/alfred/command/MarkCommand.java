@@ -29,6 +29,8 @@ public class MarkCommand extends Command {
     @Override
     public void execute(TaskList tasks, Ui ui) throws AlfredException {
         Task task = isDone ? tasks.mark(index) : tasks.unmark(index);
+        assert isDone == "X".equals(task.getStatusIcon())
+                : "Marking should update the task completion status";
         ui.showTaskMarked(task, isDone);
     }
 

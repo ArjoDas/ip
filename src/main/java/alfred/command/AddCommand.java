@@ -17,6 +17,8 @@ public class AddCommand extends Command {
      * @param task Task produced by {@link alfred.parser.Parser}.
      */
     public AddCommand(Task task) {
+        // Parser constructs this only after a ToDo, Deadline, or Event is created.
+        assert task != null : "AddCommand requires a parsed task";
         this.task = task;
     }
 

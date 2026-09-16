@@ -16,6 +16,9 @@ import javafx.util.Duration;
  * Controller for the main chat window.
  */
 public class MainWindow extends AnchorPane {
+    /** Pause before closing the window after the user types {@code bye}. */
+    private static final double EXIT_DELAY_SECONDS = 1.5;
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -44,6 +47,8 @@ public class MainWindow extends AnchorPane {
      * @param alfred Chatbot used to produce replies.
      */
     public void setAlfred(Alfred alfred) {
+        // Main.start() injects the application Alfred before showing the window.
+        assert alfred != null : "MainWindow needs an Alfred instance before showing a greeting";
         this.alfred = alfred;
         dialogContainer.getChildren().add(
                 DialogBox.getAlfredDialog(alfred.getGreeting(), alfredImage));
@@ -56,6 +61,7 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
+        assert alfred != null : "User input is handled only after Alfred is injected";
         String input = userInput.getText();
         if (input.isBlank()) {
             return;
@@ -71,7 +77,7 @@ public class MainWindow extends AnchorPane {
         if (alfred.isExit()) {
             userInput.setDisable(true);
             sendButton.setDisable(true);
-            PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+            PauseTransition delay = new PauseTransition(Duration.seconds(EXIT_DELAY_SECONDS));
             delay.setOnFinished(event -> Platform.exit());
             delay.play();
         }

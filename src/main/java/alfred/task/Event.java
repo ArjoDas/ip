@@ -15,6 +15,9 @@ public class Event extends Task {
     /** Creates an incomplete event task. */
     public Event(String description, TaskDateTime from, TaskDateTime to) {
         super(description);
+        // Parser and save loading only construct an event after parsing both times.
+        assert from != null : "An event must have a start date-time";
+        assert to != null : "An event must have an end date-time";
         this.from = from;
         this.to = to;
     }
@@ -45,6 +48,8 @@ public class Event extends Task {
     public boolean occursOn(LocalDate date) {
         LocalDate start = from.toLocalDate();
         LocalDate end = to.toLocalDate();
-        return !date.isBefore(start) && !date.isAfter(end);
+        boolean isOnOrAfterStart = date.isEqual(start) || date.isAfter(start);
+        boolean isOnOrBeforeEnd = date.isEqual(end) || date.isBefore(end);
+        return isOnOrAfterStart && isOnOrBeforeEnd;
     }
 }
