@@ -1,6 +1,7 @@
 package alfred.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class StorageTest {
         assertEquals("[T][ ] read book", loaded.get(0).getDisplayText());
         assertEquals("[D][ ] return book (by: Oct 15 2019)", loaded.get(1).getDisplayText());
         assertEquals("[E][X] camp (from: Oct 14 2019 to: Oct 16 2019)", loaded.get(2).getDisplayText());
-        assertEquals("E | 1 | camp | 2019-10-14 | 2019-10-16", loaded.get(2).toSaveFormat());
+        assertEquals("E | 1 | camp | 2019-10-14 | 2019-10-16 | UA", loaded.get(2).toSaveFormat());
     }
 
     @Test
@@ -80,5 +81,20 @@ public class StorageTest {
         assertEquals(2, loaded.size());
         assertEquals("[T][ ] keep this", loaded.get(0).getDisplayText());
         assertEquals("[E][ ] camp (from: Oct 14 2019 to: Oct 16 2019)", loaded.get(1).getDisplayText());
+    }
+
+    @Test
+    public void load_mixedArchiveFlags_keepsArchivedAndLive() throws IOException {
+        Path file = tempDir.resolve("alfred.txt");
+        Files.writeString(file, """
+                T | 0 | live task | UA
+                T | 0 | archived task | A
+                """, StandardCharsets.UTF_8);
+
+        List<Task> loaded = new Storage(file).load();
+        assertEquals(2, loaded.size());
+        assertFalse(loaded.get(0).isArchived());
+        assertTrue(loaded.get(1).isArchived());
+        assertEquals("T | 0 | archived task | A", loaded.get(1).toSaveFormat());
     }
 }

@@ -30,7 +30,7 @@ public class Deadline extends Task {
     @Override
     public String toSaveFormat() {
         return getType().getIcon() + " | " + getStatusBit() + " | " + description
-                + " | " + deadline.toSaveString();
+                + " | " + deadline.toSaveString() + " | " + getArchiveBit();
     }
 
     /**

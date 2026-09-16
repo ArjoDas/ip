@@ -35,7 +35,8 @@ public class Event extends Task {
     @Override
     public String toSaveFormat() {
         return getType().getIcon() + " | " + getStatusBit() + " | " + description
-                + " | " + from.toSaveString() + " | " + to.toSaveString();
+                + " | " + from.toSaveString() + " | " + to.toSaveString()
+                + " | " + getArchiveBit();
     }
 
     /**

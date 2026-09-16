@@ -31,7 +31,7 @@ public class DeadlineTest {
     @Test
     public void toSaveFormat_pendingDateOnly() {
         Deadline deadline = new Deadline("return book", date("2019-10-15"));
-        assertEquals("D | 0 | return book | 2019-10-15", deadline.toSaveFormat());
+        assertEquals("D | 0 | return book | 2019-10-15 | UA", deadline.toSaveFormat());
         assertEquals("[D][ ] return book (by: Oct 15 2019)", deadline.getDisplayText());
     }
 

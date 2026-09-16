@@ -34,7 +34,7 @@ public class EventTest {
     @Test
     public void toSaveFormat_pendingRange() {
         Event event = new Event("camp", date("2019-10-14"), date("2019-10-16"));
-        assertEquals("E | 0 | camp | 2019-10-14 | 2019-10-16", event.toSaveFormat());
+        assertEquals("E | 0 | camp | 2019-10-14 | 2019-10-16 | UA", event.toSaveFormat());
         assertEquals("[E][ ] camp (from: Oct 14 2019 to: Oct 16 2019)", event.getDisplayText());
     }
 

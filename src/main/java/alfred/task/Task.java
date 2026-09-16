@@ -21,6 +21,15 @@ public abstract class Task {
     /** Number of pipe-delimited fields in an event save line. */
     private static final int EVENT_FIELD_COUNT = 5;
 
+    /** Extra save-file field that stores the archive flag. */
+    private static final int ARCHIVE_FLAG_OFFSET = 1;
+
+    /** Save-file marker for an archived task. */
+    private static final String SAVE_ARCHIVED = "A";
+
+    /** Save-file marker for a live, unarchived task. */
+    private static final String SAVE_UNARCHIVED = "UA";
+
     /** Index of the description field in a save line. */
     private static final int DESCRIPTION_INDEX = 2;
 
@@ -36,12 +45,16 @@ public abstract class Task {
     /** Completion status of the task. */
     protected TaskStatus status;
 
+    /** {@code true} if this task is archived and hidden from the live list. */
+    private boolean isArchived;
+
     /** Creates an incomplete task with the given description. */
     public Task(String description) {
         // Parser and save loading always supply a description string.
         assert description != null : "Task description should not be null";
         this.description = description;
         this.status = TaskStatus.PENDING;
+        this.isArchived = false;
     }
 
     /** Returns the display icon for this task's completion status. */
@@ -58,6 +71,26 @@ public abstract class Task {
     /** Marks this task as incomplete. */
     public void markAsNotDone() {
         status = TaskStatus.PENDING;
+    }
+
+    /** Archives this task so it is hidden from the live list. */
+    public void archive() {
+        isArchived = true;
+    }
+
+    /** Restores this task to the live list. */
+    public void unarchive() {
+        isArchived = false;
+    }
+
+    /** Returns {@code true} if this task is archived. */
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    /** Returns {@code true} if this task is marked done. */
+    public boolean isDone() {
+        return status == TaskStatus.DONE;
     }
 
     /** Returns the task description. */
@@ -134,15 +167,48 @@ public abstract class Task {
         return status == TaskStatus.DONE ? SAVE_STATUS_DONE : SAVE_STATUS_PENDING;
     }
 
+    /** Returns {@code A} if this task is archived, otherwise {@code UA}. */
+    protected String getArchiveBit() {
+        return isArchived ? SAVE_ARCHIVED : SAVE_UNARCHIVED;
+    }
+
+    /**
+     * Returns whether {@code parts} encodes an archived task, or {@code null} if the
+     * field count or flag is invalid.
+     *
+     * @param parts Pipe-delimited save-line fields.
+     * @param legacyFieldCount Field count used before the archive column existed.
+     * @return {@code true} if archived, {@code false} if live, or {@code null} if invalid.
+     */
+    private static Boolean parseArchiveFlag(String[] parts, int legacyFieldCount) {
+        if (parts.length == legacyFieldCount) {
+            return Boolean.FALSE;
+        }
+        if (parts.length == legacyFieldCount + ARCHIVE_FLAG_OFFSET) {
+            String flag = parts[parts.length - 1].trim();
+            if (SAVE_ARCHIVED.equals(flag)) {
+                return Boolean.TRUE;
+            }
+            if (SAVE_UNARCHIVED.equals(flag)) {
+                return Boolean.FALSE;
+            }
+        }
+        return null;
+    }
+
     private static Task parseTodo(String[] parts) {
-        if (parts.length != TODO_FIELD_COUNT || parts[DESCRIPTION_INDEX].isEmpty()) {
+        Boolean isArchived = parseArchiveFlag(parts, TODO_FIELD_COUNT);
+        if (isArchived == null || parts[DESCRIPTION_INDEX].isEmpty()) {
             return null;
         }
-        return new ToDo(parts[DESCRIPTION_INDEX]);
+        Task task = new ToDo(parts[DESCRIPTION_INDEX]);
+        applyArchiveFlag(task, isArchived);
+        return task;
     }
 
     private static Task parseDeadline(String[] parts) {
-        if (parts.length != DEADLINE_FIELD_COUNT || parts[DESCRIPTION_INDEX].isEmpty()
+        Boolean isArchived = parseArchiveFlag(parts, DEADLINE_FIELD_COUNT);
+        if (isArchived == null || parts[DESCRIPTION_INDEX].isEmpty()
                 || parts[FIRST_DATE_INDEX].isEmpty()) {
             return null;
         }
@@ -150,11 +216,14 @@ public abstract class Task {
         if (deadline == null) {
             return null;
         }
-        return new Deadline(parts[DESCRIPTION_INDEX], deadline);
+        Task task = new Deadline(parts[DESCRIPTION_INDEX], deadline);
+        applyArchiveFlag(task, isArchived);
+        return task;
     }
 
     private static Task parseEvent(String[] parts) {
-        if (parts.length != EVENT_FIELD_COUNT || parts[DESCRIPTION_INDEX].isEmpty()
+        Boolean isArchived = parseArchiveFlag(parts, EVENT_FIELD_COUNT);
+        if (isArchived == null || parts[DESCRIPTION_INDEX].isEmpty()
                 || parts[FIRST_DATE_INDEX].isEmpty() || parts[EVENT_END_INDEX].isEmpty()) {
             return null;
         }
@@ -163,7 +232,15 @@ public abstract class Task {
         if (from == null || to == null) {
             return null;
         }
-        return new Event(parts[DESCRIPTION_INDEX], from, to);
+        Task task = new Event(parts[DESCRIPTION_INDEX], from, to);
+        applyArchiveFlag(task, isArchived);
+        return task;
+    }
+
+    private static void applyArchiveFlag(Task task, boolean isArchived) {
+        if (isArchived) {
+            task.archive();
+        }
     }
 
     /** Returns the type identifying this task. */
