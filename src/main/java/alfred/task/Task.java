@@ -38,12 +38,15 @@ public abstract class Task {
 
     /** Creates an incomplete task with the given description. */
     public Task(String description) {
+        // Parser and save loading always supply a description string.
+        assert description != null : "Task description should not be null";
         this.description = description;
         this.status = TaskStatus.PENDING;
     }
 
     /** Returns the display icon for this task's completion status. */
     public String getStatusIcon() {
+        assert status != null : "A task always has a completion status after construction";
         return status.getIcon();
     }
 

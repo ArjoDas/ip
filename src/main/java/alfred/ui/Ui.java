@@ -75,6 +75,8 @@ public class Ui {
      * @return Raw command text, not including the trailing newline.
      */
     public String readCommand() {
+        // readCommand is used only by the console loop, which constructs Ui with a scanner.
+        assert scanner != null : "readCommand is only used in console mode";
         return scanner.nextLine();
     }
 
@@ -110,6 +112,9 @@ public class Ui {
      * @param taskCount Number of tasks after the add.
      */
     public void showTaskAdded(Task task, int taskCount) {
+        // AddCommand shows a confirmation only after inserting a task.
+        assert task != null : "Added task should exist";
+        assert taskCount >= 1 : "Adding a task leaves at least one item in the list";
         showReply("Very good. I've added this task:\n  "
                 + task.getDisplayText() + "\n"
                 + "You now have " + taskCount + " tasks in your list.");
@@ -122,6 +127,9 @@ public class Ui {
      * @param taskCount Number of tasks after the deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
+        // DeleteCommand shows a confirmation only after a successful removal.
+        assert task != null : "Deleted task should exist";
+        assert taskCount >= 0 : "Task count cannot be negative after a deletion";
         showReply("Noted. I've removed this task:\n  "
                 + task.getDisplayText() + "\n"
                 + "Now you have " + taskCount + " tasks in the list.");
@@ -161,6 +169,8 @@ public class Ui {
      * @param query Date typed after the {@code on} command.
      */
     public void showTasksOn(List<Task> tasks, TaskDateTime query) {
+        // OnCommand is only created with a successfully parsed date.
+        assert query != null : "Date query should already be parsed";
         LocalDate date = query.toLocalDate();
         startFrame();
         appendLine("Certainly. Here are the deadlines and events on "

@@ -36,6 +36,8 @@ public class Alfred {
      * @param isConsole {@code true} to print framed console output.
      */
     public Alfred(String filePath, boolean isConsole) {
+        // Both the console and GUI entry points supply a save-file path.
+        assert filePath != null && !filePath.isBlank() : "Save file path should be provided";
         ui = new Ui(isConsole);
         storage = new Storage(Path.of(filePath));
         TaskList loadedTasks;
@@ -79,7 +81,9 @@ public class Alfred {
      */
     public String getResponse(String input) {
         processCommand(input);
-        return ui.consumeReply();
+        String reply = ui.consumeReply();
+        assert !reply.isEmpty() : "Every command path should produce a reply for the GUI";
+        return reply;
     }
 
     public boolean isExit() {
@@ -98,6 +102,7 @@ public class Alfred {
     private void processCommand(String input) {
         try {
             Command command = Parser.parse(input);
+            assert command != null : "Parser returns a command when parsing succeeds";
             command.execute(tasks, ui);
             if (command.isMutating()) {
                 persistTasks();

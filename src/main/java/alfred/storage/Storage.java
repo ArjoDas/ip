@@ -22,6 +22,8 @@ public class Storage {
      * @param filePath Relative path of the save file.
      */
     public Storage(Path filePath) {
+        // Alfred always constructs storage with the configured save-file path.
+        assert filePath != null : "Save file path should not be null";
         this.filePath = filePath;
     }
 
@@ -58,12 +60,15 @@ public class Storage {
      * @throws IOException If the file cannot be created or written.
      */
     public void save(List<Task> tasks) throws IOException {
+        // TaskList.getTasks() always returns a concrete list of stored tasks.
+        assert tasks != null : "Task list to save should not be null";
         Path parent = filePath.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
         }
         List<String> lines = new ArrayList<>();
         for (Task task : tasks) {
+            assert task != null : "Cannot save a null task";
             lines.add(task.toSaveFormat());
         }
         Files.write(filePath, lines, StandardCharsets.UTF_8);

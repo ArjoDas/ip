@@ -17,6 +17,8 @@ public class OnCommand extends Command {
      * @param query Parsed date from the {@code on} command.
      */
     public OnCommand(TaskDateTime query) {
+        // Parser rejects an unparseable date before constructing this command.
+        assert query != null : "OnCommand requires a parsed date";
         this.query = query;
     }
 

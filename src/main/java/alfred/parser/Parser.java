@@ -46,6 +46,8 @@ public class Parser {
      * @throws AlfredException If the line is not a recognized, well-formed command.
      */
     public static Command parse(String fullCommand) throws AlfredException {
+        // Console and GUI always pass the raw command line, never null.
+        assert fullCommand != null : "Command text should not be null";
         if (fullCommand.equals("bye")) {
             return new ExitCommand();
         }
@@ -126,6 +128,8 @@ public class Parser {
     }
 
     private static Command parseDeadline(String body) throws AlfredException {
+        // parse() only delegates here after matching the deadline command word.
+        assert body != null : "parseDeadline is only given the deadline arguments";
         if (body.isEmpty()) {
             throw new AlfredException("a deadline requires a description, sir.");
         }
@@ -145,10 +149,13 @@ public class Parser {
         if (by == null) {
             throw new AlfredException(DATE_FORMAT_HINT);
         }
+        assert !description.isEmpty() : "Empty deadline descriptions should have been rejected";
         return new AddCommand(new Deadline(description, by));
     }
 
     private static Command parseEvent(String body) throws AlfredException {
+        // parse() only delegates here after matching the event command word.
+        assert body != null : "parseEvent is only given the event arguments";
         if (body.isEmpty()) {
             throw new AlfredException("an event requires a description and its times, sir.");
         }
@@ -172,6 +179,7 @@ public class Parser {
         if (fromDateTime.isAfter(toDateTime)) {
             throw new AlfredException("an event cannot end before it starts, sir.");
         }
+        assert !fromDateTime.isAfter(toDateTime) : "Events that end before they start should have been rejected";
         return new AddCommand(new Event(description, fromDateTime, toDateTime));
     }
 
@@ -180,6 +188,8 @@ public class Parser {
      * argument.
      */
     private static int parseTaskIndex(String argument) throws AlfredException {
+        // parse() only delegates here for mark, unmark, and delete arguments.
+        assert argument != null : "parseTaskIndex is only given the index argument";
         try {
             int taskNumber = Integer.parseInt(argument);
             return taskNumber - USER_NUMBERING_OFFSET;
