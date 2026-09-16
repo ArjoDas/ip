@@ -277,7 +277,7 @@ public class Ui {
      */
     private void appendNumberedTask(int zeroBasedIndex, Task task) {
         int displayNumber = zeroBasedIndex + USER_NUMBERING_OFFSET;
-        appendLine(displayNumber + "." + task.getDisplayText());
+        appendLine(String.format("%2d.", displayNumber) + task.getDisplayText());
     }
 
     /** Frames a single chatbot reply between divider lines. */

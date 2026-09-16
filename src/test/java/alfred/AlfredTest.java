@@ -34,7 +34,7 @@ public class AlfredTest {
         assertTrue(added.contains("You now have 1 tasks in your list."));
 
         String listed = alfred.getResponse("list");
-        assertTrue(listed.contains("1.[T][ ] read book"));
+        assertTrue(listed.contains(" 1.[T][ ] read book"));
     }
 
     @Test
@@ -74,8 +74,8 @@ public class AlfredTest {
         String liveList = alfred.getResponse("list");
         assertFalse(liveList.contains("read book"));
         String archiveList = alfred.getResponse("list archive");
-        assertTrue(archiveList.contains("1.[T][ ] read book"));
-        assertTrue(archiveList.contains("2.[T][ ] return book"));
+        assertTrue(archiveList.contains(" 1.[T][ ] read book"));
+        assertTrue(archiveList.contains(" 2.[T][ ] return book"));
     }
 
     @Test
