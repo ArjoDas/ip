@@ -59,7 +59,7 @@ public class Parser {
             return new MarkCommand(parseTaskIndex(fullCommand), false);
         }
         if (fullCommand.startsWith("delete ")) {
-            return new DeleteCommand(parseDeleteIndex(fullCommand));
+            return new DeleteCommand(parseTaskIndex(fullCommand));
         }
         if (fullCommand.equals("todo")) {
             throw new AlfredException("a todo requires a description, sir.");
@@ -152,23 +152,12 @@ public class Parser {
     }
 
     /**
-     * Returns the zero-based index from a {@code mark} or {@code unmark} command.
+     * Returns the zero-based index from a {@code mark}, {@code unmark}, or {@code delete}
+     * command.
      */
     private static int parseTaskIndex(String command) throws AlfredException {
         try {
             int taskNumber = Integer.parseInt(command.substring(command.indexOf(' ') + 1));
-            return taskNumber - 1;
-        } catch (NumberFormatException exception) {
-            throw new AlfredException("please provide a valid task number, sir.");
-        }
-    }
-
-    /**
-     * Returns the zero-based index from a {@code delete} command.
-     */
-    private static int parseDeleteIndex(String command) throws AlfredException {
-        try {
-            int taskNumber = Integer.parseInt(command.substring("delete ".length()));
             return taskNumber - 1;
         } catch (NumberFormatException exception) {
             throw new AlfredException("please provide a valid task number, sir.");
