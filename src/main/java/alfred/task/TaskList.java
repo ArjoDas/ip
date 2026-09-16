@@ -110,14 +110,9 @@ public class TaskList {
      */
     public List<Task> find(String keyword) {
         String needle = keyword.toLowerCase(Locale.ENGLISH);
-        List<Task> matches = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            String description = tasks.get(i).getDescription().toLowerCase(Locale.ENGLISH);
-            if (description.contains(needle)) {
-                matches.add(tasks.get(i));
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase(Locale.ENGLISH).contains(needle))
+                .toList();
     }
 
     private void checkIndex(int zeroBasedIndex) throws AlfredException {
