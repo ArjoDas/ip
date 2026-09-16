@@ -11,6 +11,18 @@ import alfred.task.TaskDateTime;
  * Reads user input and presents chatbot replies for the console or GUI.
  */
 public class Ui {
+    /**
+     * How the GUI should present the latest chatbot reply.
+     */
+    public enum ReplyStyle {
+        /** Conversational reply using the default bubble style. */
+        NORMAL,
+        /** Error reply, shown with a darker red bubble. */
+        ERROR,
+        /** Numbered task list, shown in a monospaced font. */
+        LIST
+    }
+
     /** Horizontal divider used to frame chatbot messages. */
     private static final String LINE =
             "    ____________________________________________________________";
@@ -37,6 +49,9 @@ public class Ui {
     /** Accumulates the latest reply so the GUI can display it. */
     private final StringBuilder replyBuffer;
 
+    /** Presentation style of the reply currently in {@code replyBuffer}. */
+    private ReplyStyle replyStyle;
+
     /** Creates a UI that reads from standard input and prints to the console. */
     public Ui() {
         this(true);
@@ -51,6 +66,7 @@ public class Ui {
         this.isConsole = isConsole;
         this.scanner = isConsole ? new Scanner(System.in) : null;
         this.replyBuffer = new StringBuilder();
+        this.replyStyle = ReplyStyle.NORMAL;
     }
 
     /** Prints the welcome banner and opening prompt. */
@@ -91,6 +107,10 @@ public class Ui {
         return reply;
     }
 
+    public ReplyStyle getReplyStyle() {
+        return replyStyle;
+    }
+
     /**
      * Prints an error framed as a chatbot reply.
      *
@@ -98,6 +118,7 @@ public class Ui {
      */
     public void showError(String message) {
         showReply("I'm afraid I must report: " + message);
+        replyStyle = ReplyStyle.ERROR;
     }
 
     /** Prints the message used when the save file cannot be read. */
@@ -168,7 +189,7 @@ public class Ui {
      * @param tasks Archived tasks to display.
      */
     public void showArchivedTaskList(List<Task> tasks) {
-        startFrame();
+        startListFrame();
         appendLine("Certainly. Here are the archived tasks:");
         for (int i = 0; i < tasks.size(); i++) {
             appendNumberedTask(i, tasks.get(i));
@@ -198,7 +219,7 @@ public class Ui {
      * @param tasks Tasks to display.
      */
     public void showTaskList(List<Task> tasks) {
-        startFrame();
+        startListFrame();
         appendLine("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             appendNumberedTask(i, tasks.get(i));
@@ -216,7 +237,7 @@ public class Ui {
         // OnCommand is only created with a successfully parsed date.
         assert query != null : "Date query should already be parsed";
         LocalDate date = query.toLocalDate();
-        startFrame();
+        startListFrame();
         appendLine("Certainly. Here are the deadlines and events on "
                 + query.toDisplayDate() + ":");
         int matchCount = 0;
@@ -239,7 +260,7 @@ public class Ui {
      * @param tasks Matching tasks to display.
      */
     public void showFoundTasks(List<Task> tasks) {
-        startFrame();
+        startListFrame();
         appendLine("Here are the matching tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             appendNumberedTask(i, tasks.get(i));
@@ -270,9 +291,16 @@ public class Ui {
     }
 
     private void startFrame() {
+        replyStyle = ReplyStyle.NORMAL;
         if (isConsole) {
             System.out.println(LINE);
         }
+    }
+
+    /** Starts a framed reply that the GUI should render as a numbered list. */
+    private void startListFrame() {
+        startFrame();
+        replyStyle = ReplyStyle.LIST;
     }
 
     private void endFrame() {

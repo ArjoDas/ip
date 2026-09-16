@@ -50,8 +50,9 @@ public class MainWindow extends AnchorPane {
         // Main.start() injects the application Alfred before showing the window.
         assert alfred != null : "MainWindow needs an Alfred instance before showing a greeting";
         this.alfred = alfred;
+        String greeting = alfred.getGreeting();
         dialogContainer.getChildren().add(
-                DialogBox.getAlfredDialog(alfred.getGreeting(), alfredImage));
+                DialogBox.getAlfredDialog(greeting, alfredImage, alfred.getLastReplyStyle()));
     }
 
     /**
@@ -70,7 +71,7 @@ public class MainWindow extends AnchorPane {
         String response = alfred.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getAlfredDialog(response, alfredImage)
+                DialogBox.getAlfredDialog(response, alfredImage, alfred.getLastReplyStyle())
         );
         userInput.clear();
 

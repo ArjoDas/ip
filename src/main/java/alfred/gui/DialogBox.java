@@ -3,6 +3,7 @@ package alfred.gui;
 import java.io.IOException;
 import java.util.Collections;
 
+import alfred.ui.Ui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -66,6 +67,17 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Adds the CSS class for {@code replyStyle} after the Alfred bubble has been flipped.
+     */
+    private void applyReplyStyle(Ui.ReplyStyle replyStyle) {
+        if (replyStyle == Ui.ReplyStyle.ERROR) {
+            dialog.getStyleClass().add("error-label");
+        } else if (replyStyle == Ui.ReplyStyle.LIST) {
+            dialog.getStyleClass().add("list-label");
+        }
+    }
+
+    /**
      * Returns a dialog box for text typed by the user.
      *
      * @param text User input.
@@ -84,8 +96,21 @@ public class DialogBox extends HBox {
      * @return Dialog box aligned to the left.
      */
     public static DialogBox getAlfredDialog(String text, Image image) {
+        return getAlfredDialog(text, image, Ui.ReplyStyle.NORMAL);
+    }
+
+    /**
+     * Returns a dialog box for Alfred's reply, styled for {@code replyStyle}.
+     *
+     * @param text Alfred's reply.
+     * @param image Alfred's avatar.
+     * @param replyStyle How the bubble should be presented.
+     * @return Dialog box aligned to the left.
+     */
+    public static DialogBox getAlfredDialog(String text, Image image, Ui.ReplyStyle replyStyle) {
         DialogBox dialogBox = new DialogBox(text, image);
         dialogBox.flip();
+        dialogBox.applyReplyStyle(replyStyle);
         return dialogBox;
     }
 }

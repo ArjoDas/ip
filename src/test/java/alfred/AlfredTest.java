@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import alfred.ui.Ui;
+
 /**
  * Tests {@link Alfred#getResponse(String)} and {@link Alfred#isExit()} for the GUI.
  */
@@ -97,6 +99,41 @@ public class AlfredTest {
         Alfred alfred = newAlfred();
         String response = alfred.getResponse("archive all");
         assertEquals("I'm afraid I must report: there are no tasks to archive, sir.", response);
+    }
+
+    @Test
+    public void getLastReplyStyle_unknownCommand_isError() {
+        Alfred alfred = newAlfred();
+        alfred.getResponse("blah");
+        assertEquals(Ui.ReplyStyle.ERROR, alfred.getLastReplyStyle());
+    }
+
+    @Test
+    public void getLastReplyStyle_list_isList() {
+        Alfred alfred = newAlfred();
+        alfred.getResponse("list");
+        assertEquals(Ui.ReplyStyle.LIST, alfred.getLastReplyStyle());
+    }
+
+    @Test
+    public void getLastReplyStyle_find_isList() {
+        Alfred alfred = newAlfred();
+        alfred.getResponse("find book");
+        assertEquals(Ui.ReplyStyle.LIST, alfred.getLastReplyStyle());
+    }
+
+    @Test
+    public void getLastReplyStyle_todo_isNormal() {
+        Alfred alfred = newAlfred();
+        alfred.getResponse("todo read book");
+        assertEquals(Ui.ReplyStyle.NORMAL, alfred.getLastReplyStyle());
+    }
+
+    @Test
+    public void getGreeting_lastReplyStyle_isNormal() {
+        Alfred alfred = newAlfred();
+        alfred.getGreeting();
+        assertEquals(Ui.ReplyStyle.NORMAL, alfred.getLastReplyStyle());
     }
 
     private Alfred newAlfred() {
