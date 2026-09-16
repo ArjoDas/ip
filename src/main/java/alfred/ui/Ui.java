@@ -18,6 +18,9 @@ public class Ui {
     /** Indent applied to chatbot message text on the console. */
     private static final String INDENT = "     ";
 
+    /** Difference between a 0-based list index and the 1-based number shown to the user. */
+    private static final int USER_NUMBERING_OFFSET = 1;
+
     private static final String BANNER =
             "        _    _  __              _\n"
                     + "       / \\  | |/ _|_ __ ___  __| |\n"
@@ -154,7 +157,7 @@ public class Ui {
         startFrame();
         appendLine("Certainly. Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendNumberedTask(i, tasks.get(i));
         }
         endFrame();
     }
@@ -175,7 +178,7 @@ public class Ui {
         int matchCount = 0;
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).occursOn(date)) {
-                appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+                appendNumberedTask(i, tasks.get(i));
                 matchCount++;
             }
         }
@@ -195,12 +198,21 @@ public class Ui {
         startFrame();
         appendLine("Here are the matching tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            appendLine((i + 1) + "." + tasks.get(i).getDisplayText());
+            appendNumberedTask(i, tasks.get(i));
         }
         if (tasks.isEmpty()) {
             appendLine("None, sir.");
         }
         endFrame();
+    }
+
+    /**
+     * Appends a task as {@code n.displayText}, converting {@code zeroBasedIndex} to a 1-based
+     * list number.
+     */
+    private void appendNumberedTask(int zeroBasedIndex, Task task) {
+        int displayNumber = zeroBasedIndex + USER_NUMBERING_OFFSET;
+        appendLine(displayNumber + "." + task.getDisplayText());
     }
 
     /** Frames a single chatbot reply between divider lines. */

@@ -67,8 +67,7 @@ public class Storage {
             Files.createDirectories(parent);
         }
         List<String> lines = new ArrayList<>();
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
+        for (Task task : tasks) {
             assert task != null : "Cannot save a null task";
             lines.add(task.toSaveFormat());
         }

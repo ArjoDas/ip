@@ -6,6 +6,30 @@ import java.time.LocalDate;
  * Represents a task entered into Alfred.
  */
 public abstract class Task {
+    /** Save-file marker for a completed task. */
+    private static final String SAVE_STATUS_DONE = "1";
+
+    /** Save-file marker for an incomplete task. */
+    private static final String SAVE_STATUS_PENDING = "0";
+
+    /** Number of pipe-delimited fields in a todo save line. */
+    private static final int TODO_FIELD_COUNT = 3;
+
+    /** Number of pipe-delimited fields in a deadline save line. */
+    private static final int DEADLINE_FIELD_COUNT = 4;
+
+    /** Number of pipe-delimited fields in an event save line. */
+    private static final int EVENT_FIELD_COUNT = 5;
+
+    /** Index of the description field in a save line. */
+    private static final int DESCRIPTION_INDEX = 2;
+
+    /** Index of the deadline or event-start field in a save line. */
+    private static final int FIRST_DATE_INDEX = 3;
+
+    /** Index of the event-end field in a save line. */
+    private static final int EVENT_END_INDEX = 4;
+
     /** Text describing the task. */
     protected String description;
 
@@ -66,26 +90,27 @@ public abstract class Task {
             return null;
         }
         String[] parts = line.split(" \\| ", -1);
-        if (parts.length < 3) {
+        if (parts.length < TODO_FIELD_COUNT) {
             return null;
         }
         String typeIcon = parts[0].trim();
         String statusBit = parts[1].trim();
         boolean isDone;
-        if (statusBit.equals("1")) {
+        if (statusBit.equals(SAVE_STATUS_DONE)) {
             isDone = true;
-        } else if (statusBit.equals("0")) {
+        } else if (statusBit.equals(SAVE_STATUS_PENDING)) {
             isDone = false;
         } else {
             return null;
         }
-        Task task = switch (typeIcon) {
-            case "T" -> parts.length == 3 && !parts[2].isEmpty()
-                    ? new ToDo(parts[2])
-                    : null;
-            case "D" -> parseDeadline(parts);
-            case "E" -> parseEvent(parts);
-            default -> null;
+        TaskType type = TaskType.fromIcon(typeIcon);
+        if (type == null) {
+            return null;
+        }
+        Task task = switch (type) {
+            case TODO -> parseTodo(parts);
+            case DEADLINE -> parseDeadline(parts);
+            case EVENT -> parseEvent(parts);
         };
         if (task != null && isDone) {
             task.markAsDone();
@@ -105,32 +130,40 @@ public abstract class Task {
     }
 
     /** Returns {@code 1} if this task is done, otherwise {@code 0}. */
-    protected int getStatusBit() {
-        return status == TaskStatus.DONE ? 1 : 0;
+    protected String getStatusBit() {
+        return status == TaskStatus.DONE ? SAVE_STATUS_DONE : SAVE_STATUS_PENDING;
+    }
+
+    private static Task parseTodo(String[] parts) {
+        if (parts.length != TODO_FIELD_COUNT || parts[DESCRIPTION_INDEX].isEmpty()) {
+            return null;
+        }
+        return new ToDo(parts[DESCRIPTION_INDEX]);
     }
 
     private static Task parseDeadline(String[] parts) {
-        if (parts.length != 4 || parts[2].isEmpty() || parts[3].isEmpty()) {
+        if (parts.length != DEADLINE_FIELD_COUNT || parts[DESCRIPTION_INDEX].isEmpty()
+                || parts[FIRST_DATE_INDEX].isEmpty()) {
             return null;
         }
-        TaskDateTime deadline = TaskDateTime.parseSaved(parts[3]);
+        TaskDateTime deadline = TaskDateTime.parseSaved(parts[FIRST_DATE_INDEX]);
         if (deadline == null) {
             return null;
         }
-        return new Deadline(parts[2], deadline);
+        return new Deadline(parts[DESCRIPTION_INDEX], deadline);
     }
 
     private static Task parseEvent(String[] parts) {
-        if (parts.length != 5 || parts[2].isEmpty() || parts[3].isEmpty()
-                || parts[4].isEmpty()) {
+        if (parts.length != EVENT_FIELD_COUNT || parts[DESCRIPTION_INDEX].isEmpty()
+                || parts[FIRST_DATE_INDEX].isEmpty() || parts[EVENT_END_INDEX].isEmpty()) {
             return null;
         }
-        TaskDateTime from = TaskDateTime.parseSaved(parts[3]);
-        TaskDateTime to = TaskDateTime.parseSaved(parts[4]);
+        TaskDateTime from = TaskDateTime.parseSaved(parts[FIRST_DATE_INDEX]);
+        TaskDateTime to = TaskDateTime.parseSaved(parts[EVENT_END_INDEX]);
         if (from == null || to == null) {
             return null;
         }
-        return new Event(parts[2], from, to);
+        return new Event(parts[DESCRIPTION_INDEX], from, to);
     }
 
     /** Returns the type identifying this task. */

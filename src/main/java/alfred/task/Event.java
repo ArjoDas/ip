@@ -48,6 +48,8 @@ public class Event extends Task {
     public boolean occursOn(LocalDate date) {
         LocalDate start = from.toLocalDate();
         LocalDate end = to.toLocalDate();
-        return !date.isBefore(start) && !date.isAfter(end);
+        boolean isOnOrAfterStart = date.isEqual(start) || date.isAfter(start);
+        boolean isOnOrBeforeEnd = date.isEqual(end) || date.isBefore(end);
+        return isOnOrAfterStart && isOnOrBeforeEnd;
     }
 }

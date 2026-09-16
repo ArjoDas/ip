@@ -26,7 +26,7 @@ public class DialogBox extends HBox {
     @FXML
     private ImageView displayPicture;
 
-    private DialogBox(String text, Image img) {
+    private DialogBox(String text, Image image) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -40,7 +40,7 @@ public class DialogBox extends HBox {
         assert dialog != null : "DialogBox.fxml must inject the dialog label";
         assert displayPicture != null : "DialogBox.fxml must inject the avatar image view";
         dialog.setText(text);
-        displayPicture.setImage(img);
+        displayPicture.setImage(image);
         HBox.setHgrow(dialog, Priority.ALWAYS);
         clipDisplayPicture();
     }
@@ -58,9 +58,9 @@ public class DialogBox extends HBox {
      * Flips the dialog box such that the ImageView is on the left and text on the right.
      */
     private void flip() {
-        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(tmp);
-        getChildren().setAll(tmp);
+        ObservableList<Node> children = FXCollections.observableArrayList(this.getChildren());
+        Collections.reverse(children);
+        getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
         dialog.getStyleClass().add("reply-label");
     }
@@ -69,23 +69,23 @@ public class DialogBox extends HBox {
      * Returns a dialog box for text typed by the user.
      *
      * @param text User input.
-     * @param img User avatar.
+     * @param image User avatar.
      * @return Dialog box aligned to the right.
      */
-    public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+    public static DialogBox getUserDialog(String text, Image image) {
+        return new DialogBox(text, image);
     }
 
     /**
      * Returns a dialog box for Alfred's reply.
      *
      * @param text Alfred's reply.
-     * @param img Alfred's avatar.
+     * @param image Alfred's avatar.
      * @return Dialog box aligned to the left.
      */
-    public static DialogBox getAlfredDialog(String text, Image img) {
-        var db = new DialogBox(text, img);
-        db.flip();
-        return db;
+    public static DialogBox getAlfredDialog(String text, Image image) {
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.flip();
+        return dialogBox;
     }
 }
